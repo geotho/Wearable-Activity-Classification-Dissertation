@@ -1,6 +1,6 @@
 \chapter{Introduction}
   This dissertation describes the implementation and evaluation of an activity classifier using 
-  accelerometer data captured simutaneously from a smartphone and a smartwatch. 
+  accelerometer data captured simutaneously from a smartphone and a smartwatch.  
   
   The classifier using data from both sources outperforms a classifier using only smartphone data,
   and the classifier that uses only smartphone data outperforms a classifier using only smartwatch 
@@ -20,14 +20,34 @@
     before \cite{appleresearchkit}.
         
     Accurate activity classification therefore has many academic and commercial applications. To be
-    marketable, activity classification solutions must use current consumer devices. This 
-    dissertation details the implemenation of accelerometer data collection using current consumer 
-    devices (an Android smartphone and Android Wear smartwatch), classifies a user's activities and 
-    compares this classification accuracy to using only smartphone data and using only smartwatch 
-    data. 
+    marketable, activity classification solutions must use current consumer devices. Though 
+    rudimentary activity classification is available on Android smartphones, an approach that
+    utilises simutaneous collection from a smartphone and smartwatch has not been investigated in
+    any detail.
+     
+    This dissertation details the implemenation of accelerometer data collection using current 
+    consumer devices (an Android smartphone and Android Wear smartwatch), classifies a user's 
+    activities and compares this classification accuracy to using only smartphone data and using 
+    only smartwatch data. 
     
   \section{Challenges}
   \label{sec:intro-challenges}
+    This project requires knowledge of a variety of disparate areas in computer science. 
+    
+    Writing software for mobile devices requires knowledge of their paradigms and nuances.
+    Mobile devices are also subject to battery life and computational power constraints and   
+    particular care must be taken to build a solution that works in practice.  
+    A project that utilises built-in sensors also requires an understanding of the features and 
+    limitations of those sensors and good knowledge in the APIs that are provided to access them.
+
+    The sensors also output data at a high rate and care must be taken to correctly handle the
+    performance and concurrency issues that may arise. Storage and transfer of large amounts of
+    raw data, especially on a memory-limited device such as a smartwatch, also requires special
+    consideration. 
+    
+    The data processing aspects of the project will require an understanding of digital signal 
+    processing, Fourier methods, artificial intelligence and machine learning, and statistics.
   
   \section{Related Work}
   \label{sec:intro-relatedwork}
+    Activity classification using accelerometer data from body-mounted devices is not a new topic.
