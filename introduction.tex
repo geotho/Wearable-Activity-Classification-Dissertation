@@ -59,6 +59,7 @@
     more interesting highlights here is that only $50\%$ of all cycling is correctly
     classified.
     \begin{table}[p]
+      \setlength\extrarowheight{5pt}
       \begin{tabu} to \linewidth { p{2cm} X X X}
         \hline
           & \textbf{Bao \emph{et al.} \cite{bao2004activity}}
@@ -66,21 +67,32 @@
           & \textbf{Atallah \emph{et al.} \cite{atallah2010sensor}} \\
         \hline
           \textbf{Activities}
-          & Walking, \newline sitting \& relaxing, \newline standing, \newline watching TV, \newline running, \newline stretching, \newline scrubbing, \newline
-          folding laundry, \newline brushing teeth, \newline riding elevator, \newline carrying items, \newline
-          computer work, \newline eating or drinking, \newline reading, \newline bicycling, \newline strength-training, \newline
-          vacuuming, \newline lying down, \newline climbing stairs, \newline riding escalator
-          & & \\
+          & Walking, \newline sitting \& relaxing, \newline standing, \newline watching TV,
+              \newline running, \newline stretching, \newline scrubbing, \newline folding laundry, 
+              \newline brushing teeth, \newline riding elevator, \newline carrying items, 
+              \newline computer work, \newline eating or drinking, \newline reading, 
+              \newline bicycling, \newline strength-training, \newline vacuuming, 
+              \newline lying down, \newline climbing stairs, \newline riding escalator
+          & Walking, \newline running, \newline cycling, \newline driving, \newline sports
+          & Lying down, \newline preparing food, \newline eating and drinking, 
+              \newline socialising, \newline reading, \newline getting dressed, 
+              \newline corridor walking, \newline treadmill walking, \newline vacuuming, 
+              \newline wiping tables, \newline corridor running, \newline treadmill running, 
+              \newline cycling, \newline sitting down and getting up, 
+              \newline lying down and getting up \\
         \hline
           \textbf{Features}
-          & Mean, energy, correlation, entropy & & \\
+          & Mean, energy, \newline correlation, \newline entropy
+          & Standard deviation, \newline entropy, \newline orientation variation
+          & Mean, variance, \newline root mean square, \newline entropy, \newline correlation, \newline range, energy, \newline primary frequency, \newline skewness, kurtosis \\
         \hline
           \textbf{Classifiers}
-          & Decision table, nearest neighbour, decision tree, naive Bayes
-          & & \\
+          & Decision table, \newline nearest neighbour, \newline decision tree, \newline naive Bayes
+          & Decision tree, \newline principle component analysis, \newline naive Bayes
+          & K-nearest neighbors, \newline naive Bayes \\
         \hline
           \textbf{Overall accuracy}
-          & $84\%$ & & \\
+          & $84\%$ & $80\%$ & N/A \\
         \hline
       \end{tabu}
         \caption{Prior work on accelerometer-based activity classification}
