@@ -52,11 +52,40 @@
   \label{sec:intro-relatedwork}
     Activity classification using accelerometer data from body-mounted devices is not a new topic: 
     Bao et al. \cite{bao2004activity} detect physicial activities using five biaxial acceleometers
-    worn on different parts of the body. 
+    worn on different parts of the body: hip, wrist, ankle, arm and thigh. 
     
     Long et al. \cite{long2009single} use a single tri-axial accelerometer placed on the wrist and 
-    use it to achieve an $80\%$ activity classification accuracy in five activities. One of the
-    more interesting highlights of Long et al. is that only $50\%$ of all cycling in correctly
+    use it to achieve an $80\%$ activity classification accuracy in five activities.  One of the
+    more interesting highlights here is that only $50\%$ of all cycling is correctly
     classified.
+    \begin{table}[p]
+      \begin{tabu} to \linewidth { p{2cm} X X X}
+        \hline
+          & \textbf{Bao \emph{et al.} \cite{bao2004activity}}
+          & \textbf{Long \emph{et al.} \cite{long2009single}}
+          & \textbf{Atallah \emph{et al.} \cite{atallah2010sensor}} \\
+        \hline
+          \textbf{Activities}
+          & Walking, \newline sitting \& relaxing, \newline standing, \newline watching TV, \newline running, \newline stretching, \newline scrubbing, \newline
+          folding laundry, \newline brushing teeth, \newline riding elevator, \newline carrying items, \newline
+          computer work, \newline eating or drinking, \newline reading, \newline bicycling, \newline strength-training, \newline
+          vacuuming, \newline lying down, \newline climbing stairs, \newline riding escalator
+          & & \\
+        \hline
+          \textbf{Features}
+          & Mean, energy, correlation, entropy & & \\
+        \hline
+          \textbf{Classifiers}
+          & Decision table, nearest neighbour, decision tree, naive Bayes
+          & & \\
+        \hline
+          \textbf{Overall accuracy}
+          & $84\%$ & & \\
+        \hline
+      \end{tabu}
+        \caption{Prior work on accelerometer-based activity classification}
+        \label{tab:intro-relatedwork-comparison}
+    \end{table}
+      
     
     
