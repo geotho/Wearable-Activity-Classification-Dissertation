@@ -1,7 +1,92 @@
 \chapter{Preparation}
+  This chapter details the work done before the main implementation of the project was started. It
+  details the devices chosen to implement this project and the reasons for choosing them. It then
+  discusses the existing libaries and APIs available for those devices and for the required data
+  processing. Finally I describe software engineering techniques used.
+
   \section{Requirements analysis}
-  \section{Devices}
+  
+  \section{Introduction to signal processing}
+  
+  
+  \section{Hardware devices}
+    The success of this project depends partly on correct selection and understanding of the devices
+    used to collect data. The devices are both required to contain accelerometers accessible to
+    developers.
+    
+    Android devices were chosen as Android Wear was the most mature platform for developing with
+    wearable devices at the time. It runs on the widest variety of devices and provides developer 
+    access to its sensors.
+    
+    \subsection{Smartphone}
+      The smartphone chosen for development was the Google Nexus 5. Smartphone technology has
+      advanced to the point that many Android smartphones are homogeneous with respect to this
+      project --- they all continue sufficient processing power, internal memory and an 
+      accerometer capable of recording data.
+      
+      The Nexus 5 contains a tri-axial accelerometer capable of recording measurements $\pm2\si{g}$
+      on each axis.
+      
+      %TODO: include tech specs of Nexus 5?
+    
+    \subsection{Smartwatch}
+      The smartwatch chosen for development was the Samsung Galaxy Gear Live.
+      
+      Wearable devices not running Android typically run either Tizen, an open-source but not 
+      widely adopted operating system --- such as the Samsung Galaxy Gear 2 --- or a proprietary 
+      operating system that does not allow access to the raw accelerometer data, for example the 
+      Jawbone Up. 
+      
+      There is more differentiation in smartwatches as there is in smartphones, with them varying
+      not just in screen size but also in screen format (round or rectangular), battery life,
+      charging facilities and sensors. Table~\ref{tab:smartwatch-features} presents differences
+      between plausible devices.
+    
   \section{Libraries and APIs}
+      This project makes use of existing libraries and APIs for the data collection, data handling
+      and classification aspects of the project. Preliminary investigation into each of these areas
+      was conducted.
+    
+    \subsection{Android Sensor API}
+      The Android platform Sensor API is implemented using a publisher-subscriber model. Listeners
+      to a particular sensor must be registered and must implement an \texttt{onSensorChanged()}
+      method. The \texttt{onSensorChanged()} method is called whenever the sensor reports a new 
+      value. A \texttt{SensorEvent} object is provided, containing a timestamp at which the data was
+      reported together with the new data.
+      
+      The rate at which \texttt{onSensorChanged()} is called is user-`suggested'; though it can be 
+      specified by the user, it can also be altered by the Android system. In practice, this means
+      that the difference in timestamps not constant but is approximately equal to the specified 
+      delay. A histogram of timestamp differences for a particular 10 minute recording is given in 
+      figure~\ref{fig:timestamp-differences}.
+      
+      Android provides both acceleration and linear acceration sensors, related by 
+      $$\textrm{acceleration} = \textrm{linear acceleration} + \textrm{gravity}$$
+      They each provide a timestamp represented as a long and three float values representing the 
+      acceleration of each axis in \si{\metre\per\square\second} at that timestamp.   
+      Table~\ref{tab:data-row} gives a graphical representation of the data returned.
+      
+      \begin{table}
+        \begin{tabu} to \linewidth {|X[2,c] | X[c] | X[c] | X[c] |}
+          \hline
+          Timestamp & X acceleration & Y acceleration & Z acceleration \\
+          \si{ns} & \si{\metre\per\square\second} & \si{\metre\per\square\second} & \si{\metre\per\square\second} \\
+          Long & Float & Float & Float \\
+          2 bytes & 1 byte & 1 byte & 1 byte \\
+          \hline
+        \end{tabu}
+        \caption{Data from the accelerometer sensor provided to the \texttt{onSensorChanged()} 
+            method.}
+        \label{tab:data-row}
+      \end{table}
+      
+      Curiously, the timestamp returned as part of the data is documented only as ``The time in nanosecond at which the event happened'' \cite{androidsensoreventapi}. Futher exploration reveals that the timestamp is not defined against any particular zero-base, but rather the time since the device was powered on \cite{androidissuedocumentationbug, androidissuehardwarebug}. The implication of this for the project is that while the timestamp can be relied on for intervals between measurements, it cannot be used between different sets of recordings or across devices.
+      
+      %TODO: which are the x y z values of the device's accelerometer?
+      
+    \subsection{ES Sensor Manager}
+    \subsection{Android Wear Data API}
+    \subsection{Scikit Learn}
   \section{Choice of tools}
   \section{Software engineering techniques}
   \section{Summary}
