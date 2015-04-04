@@ -66,7 +66,7 @@
     
     Atallah \emph{et al.} \cite{atallah2010sensor} focus on two important facets of accelerometer-based activity classifcation: sensor location and useful features. Much like Bao \emph{et al.} they use seven sensors on the chest, arm, wrist, waist, knee, ankle and ear. Of their analysed features, the averaged entropy over three axes, the mean of the pairwise cross-covariance of axes and the energy of a 0.2 Hz window around the main frequency divided by total energy are all highlight as being highly ranked for distinguishing activities. However, this study neglects to use a decision tree classifier in its classification, recommend by both Bao \emph{et al.} and Long \emph{et al.}
     \begin{table}[p]
-      \setlength\extrarowheight{5pt}
+      {\tabulinesep=1.2mm
       \begin{tabu} to \linewidth { p{2cm} X X X}
         \hline
           & \textbf{Bao \emph{et al.} \cite{bao2004activity}}
@@ -79,7 +79,7 @@
               \newline brushing teeth, \newline riding elevator, \newline carrying items, 
               \newline computer work, \newline eating or drinking, \newline reading, 
               \newline bicycling, \newline strength-training, \newline vacuuming, 
-              \newline lying down, \newline climbing stairs, \newline riding escalator \newline
+              \newline lying down, \newline climbing stairs, \newline riding escalator
           & Walking, \newline running, \newline cycling, \newline driving, \newline sports
           & Lying down, \newline preparing food, \newline eating and drinking, 
               \newline socialising, \newline reading, \newline getting dressed, 
@@ -91,17 +91,17 @@
           \textbf{Features}
           & Mean, energy, \newline correlation, \newline entropy
           & Standard deviation, \newline entropy, \newline orientation variation
-          & Mean, variance, \newline root mean square, \newline entropy, \newline correlation, \newline range, energy, \newline primary frequency, \newline skewness, kurtosis \newline \\
+          & Mean, variance, \newline root mean square, \newline entropy, \newline correlation, \newline range, energy, \newline primary frequency, \newline skewness, kurtosis \\
         \hline
           \textbf{Classifiers}
           & Decision table, \newline nearest neighbour, \newline decision tree, \newline naive Bayes
-          & Decision tree, \newline principle component analysis, \newline naive Bayes \newline
+          & Decision tree, \newline principle component analysis, \newline naive Bayes 
           & K-nearest neighbors, \newline naive Bayes \\
         \hline
           \textbf{Overall accuracy}
           & $84\%$ & $80\%$ & N/A \\
         \hline
-      \end{tabu}
+      \end{tabu}}
       \caption{Prior work on accelerometer-based activity classification}
       \label{tab:intro-relatedwork-comparison}
     \end{table}
