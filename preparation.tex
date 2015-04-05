@@ -5,6 +5,26 @@
   processing. Finally I describe software engineering techniques used.
 
   \section{Requirements analysis}
+    The aim of the project is to classify activities based on accelerometer recordings from a consumer smartwatch and smartphone, and evaluate to what extent the smartwatch is better at helping to classify activities. The requirements to accomplish this can be split into data collection and data processing requirements.
+    
+    \subsubsection{Data collection requirements}
+      \begin{enumerate}
+        \item access tri-axial readings from accelerometer on both the smartwatch and the smartphone;
+        \item store this accelerometer data temporarily on the internal memory of each device using suitable data structures;
+        \item transmit this data from the smartwatch to the smartphone using a suitable protocol;
+        \item store the data permanently on the smartphone, to enable transfer to the computer.
+      \end{enumerate}
+    
+    \subsubsection{Data processing requirements}
+      \begin{enumerate}
+        \item parse the data into a manipulatable format;
+        \item preprocess the data, including filtering and splitting into fixed-length bins;
+        \item extract features from each bin;
+        \item train classifier(s) on the extracted features;
+        \item test classifier and record evaluation statistics.
+      \end{enumerate}
+    
+    The remainder of this chapter describes work done to ensure these requirements could be fulfilled.
   
   \section{Introduction to signal processing}
     The output from any accelerometer is a time-series representing its acceleration. Effectively extracting information from this time-series is central to the success of this project. Knowledge of signal processing is therefore critical.
@@ -42,7 +62,7 @@
       \begin{figure}
         \centering
         \includegraphics[width=0.8\textwidth]{noise_histogram}
-        \caption{Histogram of the magnitude $\|\mathbf{x}\| = \sqrt{x^2+y^2+z^2}$ of the data shown in Figure~\ref{fig:x_y_z_flat_plot}. The magnitude should measure $ \mathrm{g} = 9.81\si{\metre\per\square\second}$. Note the mean of the data is less than g }
+        \caption{Histogram of the magnitude $\|\mathbf{x}\| = \sqrt{x^2+y^2+z^2}$ of the data shown in Figure~\ref{fig:x_y_z_flat_plot}. The magnitude should measure $ \mathrm{g} = 9.81\si{\metre\per\square\second}$. The noise means the accelerometer data is imprecise. The mean of the data is less than g, which indicates the recording is also inaccurate.}
         \label{fig:noise_histogram}
       \end{figure}
       
@@ -51,7 +71,7 @@
       \begin{figure}
         \centering
         \includegraphics[width=0.8\textwidth]{noise_prob_plot}
-        \caption{A normal probability plot of the magnitude $\|\mathbf{x}\| = \sqrt{x^2+y^2+z^2}$  of the data shown in Figure~\ref{fig:x_y_z_flat_plot} }
+        \caption{A normal probability plot of the magnitude $\|\mathbf{x}\| = \sqrt{x^2+y^2+z^2}$  of the data shown in Figure~\ref{fig:x_y_z_flat_plot}. Data that is normally distributed will form a straight line when plotted in this way. This data is very likely to be normally distributed.}
         \label{fig:noise_prob_plot}
       \end{figure}
       
