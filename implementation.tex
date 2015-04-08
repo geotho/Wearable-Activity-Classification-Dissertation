@@ -1,0 +1,65 @@
+\chapter{Implementation}
+  \section{Data collection}
+    This section contains details of the components built to access the accelerometer data and transfer it to a computer.
+    
+    Because both the smartwatch and the smartphone both run Android, it is possible to create components that are shared between the devices, reducing the amount of code I am required to write and to test, resulting in less redundancy, less complexity and ultimately a more reliable implementation. Both the \texttt{AccelerometerListenerService} and the \texttt{AccelerometerDataBlob} are shared between both devices.
+    
+    \subsection{Accessing the accelerometer}
+      The \texttt{AccelerometerListenerService} is responsible for receiving readings from the accelerometer and delivering them to the data structure responsible for storage.
+      
+      As described in Section~\ref{sec:sensor-api}, the Sensor API utilises a listener methodology. It is required to create and register a listener that implements \texttt{onSensorChanged()}. 
+      
+      \subsubsection{Performance considerations}
+        Because the accelerometer can update its values at a rate of over 50\si{Hz}, it is vital that any implementation of \texttt{onSensorChanged()} be non-blocking and ideally be very quick to execute. Any expensive computation or IO operation has to be moved to a separate thread.
+        
+        If the execution of \texttt{onSensorChanged()} takes longer than $\frac{1}{\mathrm{sample-rate}}$, requests for \texttt{onSensorChanged()} will queue and eventually lead to exhaustion of memory or dropping of data.
+        
+        For this reason the data structure used, discussed in Section~\ref{sec:storing-accelerometer-data}, is very lightweight and \texttt{onSensorChanged()} is only responsible for passing data to it.
+      
+      \subsubsection{Concurrency considerations}
+        Because \texttt{onSensorChanged()} can be called at such a high rate, it is possible that new calls to the method can be made while previous calls are still executing. Data corruption could result from improper handling of asynchronicity.
+      
+        The documentation for the Sensor API is not explicit about whether calls to \texttt{onSensorChanged()} queue on the same thread or whether they can be dispatched asynchronously. For this reason, the \texttt{AccelerometerListenerService} was designed to be thread-safe by using Java concurrency primatives.
+      
+      \subsubsection{Power consumption considerations}
+        Recording data from the accelerometer can be computationally expensive. This increase in computational overhead translates to an increase in power consumption in battery powered devices such as the smartphone and the smartwatch. It is for this reason that care should be taken to minimise power usage where possible while still collecting all the required data.
+        
+        One tradeoff that had to be made was between collection strategies. One strategy is to record data at a specified sample rate from when the recording is turned on until it is turned off. An alternative strategy is to record a window of data at set intervals and sleep the remainder of the time. For example, one might set the accelerometer to record 10 seconds of data every 50 seconds.
+        
+        Though this strategy saves battery power as the device turns off the accelerometer between recordings, a continous recording approach was taken in this project in order to have as much data as possible with which to train. In addition, the battery life was not severly impeded by the continous recording approach.
+        
+        Typically, Android will power off the display and later the CPU after a period of user-inactivity. Powering off the CPU means that the device will stop recording accelerometer data, and so it is required to maintain a wake-lock which keeps the CPU from powering off. It is also important to remember to release the wake-lock once accelerometer recording is complete. Otherwise, the device's CPU will remain on even when the device appears to be on standby, using battery.
+        
+      \subsubsection{Sampling rate}
+        In ideal conditions, it would be sensible to sample at as fast a rate as possible. The resultant data can always be downsampled afterwards if it is not required. However, picking a very fast sample rate in this context has two potential downsides: battery life drain and resultant data.
+        
+        As per the Nyquist-Shannon sampling theory, discussed in Section~\ref{sec:intro-sig-processing}, our sample rate should be greater than twice the highest frequency of the signal. Because it isn't possible to know what the highest frequency is going to be, it would be reasonable to sample at a far higher rate. 
+      
+        Recall from Table~\ref{tab:data-row} that each measurement has a total size of 20 bytes. At a sample rate of 50\si{Hz}, we produce data at approximately 1 KBps.
+        
+        Increasing the sample rate was not found to have a detrimental impact on power consumption.
+        
+    \subsection{Storing accelerometer data}
+      \label{sec:storing-accelerometer-data}
+      % data structure – binary data
+      % local temporary internal storage as opposed to memory
+      % delete when transmitted
+    \subsection{Transmitting accelerometer data}
+      % DataItem has 100kb limit.
+      % Bug with Asset class – FileDescriptor
+      % Use of Asset transmit
+      % Sender
+      % Receiver
+    \subsection{User interface}
+      \subsubsection{Smartphone}
+      
+      \subsubsection{Smartwatch}
+      
+  \section{Activities and data collection method}
+  \section{Data processing}
+    \subsection{Importing}
+    \subsection{Preprocessing}
+    \subsection{Grouping and binning}
+    \subsection{Feature extraction}
+    \subsection{Machine learning}
+  \section{Summary}
