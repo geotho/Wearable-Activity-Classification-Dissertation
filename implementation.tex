@@ -31,20 +31,68 @@
         Typically, Android will power off the display and later the CPU after a period of user-inactivity. Powering off the CPU means that the device will stop recording accelerometer data, and so it is required to maintain a wake-lock which keeps the CPU from powering off. It is also important to remember to release the wake-lock once accelerometer recording is complete. Otherwise, the device's CPU will remain on even when the device appears to be on standby, using battery.
         
       \subsubsection{Sampling rate}
-        In ideal conditions, it would be sensible to sample at as fast a rate as possible. The resultant data can always be downsampled afterwards if it is not required. However, picking a very fast sample rate in this context has two potential downsides: battery life drain and resultant data.
+        In ideal conditions, it would be sensible to sample at as fast a rate as possible: the resultant data can always be downsampled afterwards if it is not required. As per the Nyquist-Shannon sampling theory, discussed in Section~\ref{sec:intro-sig-processing}, our sample rate should be greater than twice the highest frequency of the signal. Because it isn't possible to know what the highest frequency is going to be, it would be reasonable to sample at a far higher rate. 
         
-        As per the Nyquist-Shannon sampling theory, discussed in Section~\ref{sec:intro-sig-processing}, our sample rate should be greater than twice the highest frequency of the signal. Because it isn't possible to know what the highest frequency is going to be, it would be reasonable to sample at a far higher rate. 
+        However, picking a very fast sample rate in this context has two potential downsides: battery life drain and the size of resultant data. I investigated whether either battery life or the size of the resulting data would be a limiting factor of sample rate.
+        
+        The impact on power consumption of increasing the sample rate was negliable. One possible reason for this is that sampling using the accelerometer at all has high fixed costs and increasing the sample rate has lower marginal costs.
       
-        Recall from Table~\ref{tab:data-row} that each measurement has a total size of 20 bytes. At a sample rate of 50\si{Hz}, we produce data at approximately 1 KBps.
+        Recall from Table~\ref{tab:data-row} that each measurement has a total size of 20 bytes. At a sample rate of 50\si{Hz}, we produce data at approximately 1 KBps or 3.6 MB per hour. The most memory-constrained device is the smartwatch, which only has 512 MB of RAM but 4 GB of internal storage. A data structure that stores the accelerometer data to the internal storage rather than to memory is required, but a sample rate of 50\si{Hz} produces a storable amount of data on reasonable-length activity recording.
         
-        Increasing the sample rate was not found to have a detrimental impact on power consumption.
-        
+        Another potential concern regarding data size is the transfer from the smartwatch to the smartphone. The only connection available is Bluetooth. The Bluetooth connection empircally has a maximum transfer rate of no more than 150 KBps, meaning an hour of activity data will take approximately 30 seconds to transfer.
+
     \subsection{Storing accelerometer data}
       \label{sec:storing-accelerometer-data}
+      The data structure to hold the accelerometer data is required to be:
+      \begin{itemize}
+        \item \textbf{fast} because it will be accessed many times per second and cannot block;
+        \item \textbf{on-disk} rather than in-memory, because the smartwatch may not have enough free memory to store all the accelerometer data for lengthy recordings;
+        \item \textbf{thread-safe} as it is unclear whether calls to \texttt{onSensorChanged()} are queued or concurrent.
+      \end{itemize}
+      
+      The data structure decided on was a temporary random-access file with buffered writing. The data is written as bytes through an output buffer. The output buffer is maintained in memory and is flushed when it reaches capacity. The capacity of the output buffer was set to 20000 bytes as data is only written in multiples of 20 bytes and the smartwatch is comfortably able to keep 20 kb in memory. This equates to data being saved to disk approximately every 20 seconds.
+      
       % data structure – binary data
       % local temporary internal storage as opposed to memory
       % delete when transmitted
     \subsection{Transmitting accelerometer data}
+      The accelerometer data has to be transmitted from the smartwatch to the smartphone before it can be transferred to a computer. As discussed in Section~\ref{sec:prep-data-api}, there are two methods to transfer data between the smartwatch and the smartphone: a DataItem and an Asset. Their advantages and disadvantages with respect to this project are highlighted in Table~\ref{tab:dataitem-vs-asset}.
+      
+      \begin{table}
+        \centering
+        {\tabulinesep=1.2mm
+        \begin{tabu} to \linewidth { X[2,c,m] | X[3,l,m] | X[3,l,m] | }
+          & \textbf{DataItem} & \textbf{Asset} \\
+          \hline
+          \textbf{Advantages} & 
+            \begin{itemize}
+              \item no separate data fetching step
+              \item simpler, more reliable receiver code
+              \item negligable transmission time
+            \end{itemize} &
+            \begin{itemize}
+              \item no hard size limit
+              \item can create an Asset from a File without storing it in memory
+            \end{itemize} \\
+          \hline
+          \textbf{Disadvantages} &
+            \begin{itemize}
+              \item 100 KB size limit
+              \item have to insert byte arrays
+            \end{itemize} &
+            \begin{itemize}
+              \item some constructors don't seem to work
+              \item transmission of large files takes a noticable amount of time
+            \end{itemize} \\
+          \hline
+        \end{tabu}}
+        \caption{Advantages and disadvantages of using the \texttt{DataItem} and \texttt{Asset} to transmit data from the smartwatch to the smartphone.}
+        \label{tab:dataitem-vs-asset}
+      \end{table}
+      
+      Because the DataItem has a 100 KB limit, an alternate transmission and storage system would have to have been built, where the smartwatch collects 100 KB of data and sends that to the smartphone while it continues to record. It is then reassembled at the smartphone receiver.
+      
+      I consider this solution inferior to the Asset implementation, which allows transmission of any size of data.
       % DataItem has 100kb limit.
       % Bug with Asset class – FileDescriptor
       % Use of Asset transmit
@@ -56,10 +104,23 @@
       \subsubsection{Smartwatch}
       
   \section{Activities and data collection method}
+    \subsection{Computer use}
+    \subsection{Walking}
+    \subsection{Cycling}
+    \subsection{Standing}
+    \subsection{Playing fussball}
+    \subsection{Stair climbing}
   \section{Data processing}
-    \subsection{Importing}
-    \subsection{Preprocessing}
-    \subsection{Grouping and binning}
+    \subsection{Importing and preprocessing}
+      \subsubsection{Import}
+        %read bytes
+        %database
+      \subsubsection{Preprocessing}
+        %disregard first and last 10 seconds
+        %magnitude
+        %filtering
+      \subsubsection{Binning}
+        %10 second overlapping bins
     \subsection{Feature extraction}
     \subsection{Machine learning}
   \section{Summary}
