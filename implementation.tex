@@ -111,16 +111,80 @@
     \subsection{Playing fussball}
     \subsection{Stair climbing}
   \section{Data processing}
+    The data processing pipeline was written in Python, because of the strength of its numerical, statistical and machine learning libraries. The data processing was done on a computer as opposed to directly on the phone because of the computational demand required of training a classifier. In a real-world use-case, one could imagine classification occuring on a cloud server.
     \subsection{Importing and preprocessing}
       \subsubsection{Import}
+        Each recording is stored in a separate binary file. The filename is always of the form: \texttt{<timestamp>-<recorder>-<device>-<activity.dat}. 
+        
+        NumPy includes methods to specify the types of binary data in a file and create an array from it. These are used to great effect to convert the binary data back into longs and floats.
+        
+        Access to the data files is then via a SQLite database, using the timestamp as the unique ID. The database allows easier access to individual records and, for example, all recordings of a certain activity.
         %read bytes
         %database
       \subsubsection{Preprocessing}
+        Data is preprocessed before feature extraction.
+        
+        The first step is the drop the first and last 10 seconds of each data recording. The justification for this is that these accelerometer recordings will not actually be representative of the activity we are attempting to classify. Rather, they will primarily be recording the starting and ending of an activity.
+        
+        For each data recording, the magnitude of the acceleration $\|\mathbf{x}\| = \sqrt{x^2+y^2+z^2}$ was calculated. Patterns in the magnitude were found to be more distinguishing than any of the features extracted from the three axes individually. The magnitude is orientation-invariant, which gives better results when considering that a wrist may move in the same way but may be oriented slightly differently. In this scenario, periodicity will still be observed in the magnitude but may not be observed in each of the three axes individually.
+        
+        Data is then filtered. As discussed in Section~\ref{sec:intro-sig-processing}, the data recorded by the accelerometer is subject to noise. Reducing the effect of this noise will produce a signal in which it is easier to observe the underlying patterns produced by movement.
+        
+        A fifth-order Butterworth Filter with a critical frequency of 5 \si{Hz} was used. The Butterworth Filter was chosen because it has no gain ripple in the pass band or the stop band and because the slow cutoff is not a problem for our application, as the frequencies of activities we are concerned with are far less than the frequency of the noise. A graph of the frequency responses for several Butterworth Filters is given in Figure~\ref{fig:butterworth_filters}.
+        
+        \begin{figure}
+          \centering
+          \includegraphics[width=1.0\textwidth]{butterworth_filters}
+          \caption{Frequency response for Butterworth filters of different orders. Each has a critical frequency of 5 \si{Hz}. A fifth-order Butterworth filter was used to filter the noise from the accelerometer data.}
+          \label{fig:butterworth_filters}
+        \end{figure}
+        
         %disregard first and last 10 seconds
         %magnitude
         %filtering
-      \subsubsection{Binning}
+      \subsubsection{Windows}
+        Each data recording is split into 10 second windows. Features are extracted from each of these bins individually. Splitting into windows allows the production of multiple feature rows from the same recording. In theory, every window for a particular activity should exhibit extracted features that are consistent. A 10 second window was picked as a balance between producing enough feature rows from collected data and ensuring that several cycles of an activity were included. 
+      
         %10 second overlapping bins
     \subsection{Feature extraction}
+      In total, 22 features are extracted from each window. The smartwatch and smartphone data are treated as separate windows for the purposes of feature extraction. A summary of the extracted features is given in Table~\ref{tab:extracted-features}. This section goes on to describe and justify each of these features.
+      
+      \begin{table}
+        \centering
+        {\tabulinesep=1.2mm
+        \begin{tabu} to \linewidth { c X[c]}
+          \textbf{No of features} & \textbf{Description of each feature} \\
+          \hline
+          4 & Mean of each axis and magnitude \\
+          4 & Standard deviation of each axis and magnitude \\
+          4 & Maximum amplitude of each axis and magnitude \\
+          4 & Median absolute deviation of each axis and magnitude \\
+          3 & Pairwise covariance of each of the three axes \\
+          1 & Spectral flatness of magnitude \\
+          1 & Spectral entropy of magnitude \\
+          1 & Frequency of maximum amplitude in the power spectrum of the magnitude \\
+          \hline
+        \end{tabu}}
+        \caption{A summary of extracted features.}
+        \label{tab:extracted-features}
+      \end{table}
+      
+      \subsubsection{Mean of each axis and magnitude}
+        The arithmetic mean $\bar{x}$ defined as $$\bar{x} = \frac{1}{n}\sum\limits_{i = 1}^{n}x_i$$ was calculated for each of the x, y and z axes and also for the magnitude.
+        
+        The arithmetic mean does not encode a lot of data, but is useful for determining primary orientation during the activity. For example, computer use has a z mean which is close to gravitational accleration while the others are near zero. This indicates the devices primarily points upward during this activity.
+      
+      \subsubsection{Standard deviation of each axis and magnitude}
+        The standard deviation $\sigma$ defined as $$\sigma = \sqrt{\frac{1}{n}\sum\limits_{i = 1}^{n}(\bar{x}-x_i)^2}$$ was calculated for each of the x, y and z axes and also for the magnitude.
+        
+      \subsubsection{Maximum amplitude of each axis and magnitude}
+        The maximum $x_{\max}$ defined as $$x_{\max} = \max_i x_i $$
+      \subsubsection{Mean average deviation of each axis and magnitude}
+        The mean average deviation $x_\mathrm{mad}$ defined as $$x_\mathrm{mad} = \mathrm{median}_i (|x_i - \mathrm{median}_j(x_j)|)$$
+      \subsubsection{Pairwise covariance of each of the three axes}
+        The covariance is a measure of how much two random variables change together. of two random variables $X$ and $Y$ is defined as $$\sigma(X, Y) = 
+      \subsubsection{Spectral flatness of magnitude}        
+      \subsubsection{Spectral entropy of magnitude}        
+      \subsubsection{Frequency of maximum amplitude in the power spectrum of the magnitude}  
     \subsection{Machine learning}
   \section{Summary}
