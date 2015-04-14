@@ -159,7 +159,7 @@
           4 & Standard deviation of each axis and magnitude \\
           4 & Maximum amplitude of each axis and magnitude \\
           4 & Median absolute deviation of each axis and magnitude \\
-          3 & Pairwise covariance of each of the three axes \\
+          3 & Pairwise correlation coefficient of each of the three axes \\
           1 & Spectral flatness of magnitude \\
           1 & Spectral entropy of magnitude \\
           1 & Frequency of maximum amplitude in the power spectrum of the magnitude \\
@@ -170,7 +170,7 @@
       \end{table}
       
       \subsubsection{Mean of each axis and magnitude}
-        The arithmetic mean $\bar{x}$ defined as $$\bar{x} = \frac{1}{n}\sum\limits_{i = 1}^{n}x_i$$ was calculated for each of the x, y and z axes and also for the magnitude.
+        The arithmetic mean $\bar{X}$ defined as $$\bar{X} = \frac{1}{n}\sum\limits_{i = 1}^{n}x_i$$ was calculated for each of the x, y and z axes and also for the magnitude.
         
         The arithmetic mean does not encode a lot of data, but is useful for determining primary orientation during the activity. For example, computer use has a z mean which is close to gravitational accleration while the others are near zero. This indicates the devices primarily points upward during this activity.
       
@@ -181,10 +181,38 @@
         The maximum $x_{\max}$ defined as $$x_{\max} = \max_i x_i $$
       \subsubsection{Mean average deviation of each axis and magnitude}
         The mean average deviation $x_\mathrm{mad}$ defined as $$x_\mathrm{mad} = \mathrm{median}_i (|x_i - \mathrm{median}_j(x_j)|)$$
-      \subsubsection{Pairwise covariance of each of the three axes}
-        The covariance is a measure of how much two random variables change together. of two random variables $X$ and $Y$ is defined as $$\sigma(X, Y) = 
-      \subsubsection{Spectral flatness of magnitude}        
-      \subsubsection{Spectral entropy of magnitude}        
-      \subsubsection{Frequency of maximum amplitude in the power spectrum of the magnitude}  
+      \subsubsection{Pairwise correlation coefficient of each of the three axes}
+        The covariance is a measure of how much two random variables change together. The covariance of two random variables $X$ and $Y$, $\mathrm{Cov}(X, Y)$ is defined as $$\mathrm{Cov}(X, Y) = \mathbb{E}[(X - \bar{X})(Y - \bar{Y})]$$
+        
+        The correlation coefficient, $\mathrm{Cor(X,Y)}$, of two random variables $X$ and $Y$ is the normalised covariance of the two random variables. $$\mathrm{Cor(X,Y)} = \frac{\mathrm{Cov(X,Y)}}{\sigma_{\mathrm{X}}\sigma_{\mathrm{Y}}}$$
+        
+        $\mathrm{Cor(X,Y)}$ has a value between $-1$ and $1$, with $1$ representing total positive correlation, $0$ representing no correlation and $-1$ representing total negative correlation.
+         
+        The correlation coefficient was calculated for each pair of axes, producing three features: $\mathrm{Cor(X,Y)}$, $\mathrm{Cor(X,Z)}$, and $\mathrm{Cor(Y,Z)}$. The correlation coefficients give a measure of how much the axes move together during the recording. This encodes some information about the direction of movement.
+      \subsubsection{Spectral flatness of magnitude}
+        Spectral flatness is also known as the tonality coefficient. It is a measure of how noise-like or tone-like a signal is. White noise has a spectral flatness approaching 1, while a pure tone has a spectral flatness approaching zero.
+        
+        Spectral flatness is calculated from the power spectrum of the signal. Recall from Section~\ref{sec:intro-sig-processing} that the power spectrum is the squared magnitude of the Fourier transform of the signal.
+        
+        If $x_i$ represents the magnitude in the power spectrum of bin $i$, then the Flatness of a power spectrum $X = [x_1, x_2, \dots , x_N]$ is defined as
+        
+        $$\mathrm{Flatness(X)} = \frac{\sqrt[N]{\prod\limits_{i=1}^N x_i}}{\frac{1}{N}\sum_{i=1}^N x_i}$$
+        
+        The geometric mean can be expressed as a summation of logarithms rather than a product, giving an alternative formula for the Flatness that does not require a large product or an nth root. As our Fourier transforms are likely to be over 10000 elements long, avoiding the large product or the expensive nth root calculation is desirable. Following conversion to a logarithmic summation, the Flatness is:
+        
+        $$\mathrm{Flatness(X)} = \frac{\exp \left( \frac{1}{N}\sum\limits_{i=1}^N \ln x_i \right) }{\frac{1}{N}\sum_{i=1}^N x_i}$$
+        
+        Spectral flatness gives a measure of how periodic a signal is. Activities where there is very high spectral flatness, akin to white noise, are aperiodic. For example, fussball and standing have no associated period, while walking when measured through the smartphone has a clear period.
+      \subsubsection{Spectral entropy of the magnitude}
+        The spectral entropy of a signal is calculated as the entropy of its power spectrum. It is defined as:
+
+        $$\mathrm{entropy} = -\sum\limits_{i=1}^N x_i \log_2 x_i$$
+      \subsubsection{Frequency of maximum amplitude in the power spectrum of the magnitude}
+        The power spectrum of the magnitude shows at which frequencies the power in the signal is distributed. It is defined as the squared magnitude of the Fourier transform of the signal.
+        
+        Rather than take the Fourier transform of the orginal signal, the mean of the signal was first subtracted. If the original signal oscillates about some non-zero offset, the Fourier transform will have a spike at the origin (0 \si{Hz}, or the DC component). To avoid incorrectly classing 0 \si{Hz} as the maximum, we subtract the mean from the original signal. The frequency of maximum amplitude of a power spectrum $X$ is then:
+        
+        $$\mathrm{f}_\mathrm{max} = \operatorname*{arg\,max}_f X_f$$
+        
     \subsection{Machine learning}
   \section{Summary}
