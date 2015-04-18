@@ -212,7 +212,105 @@
         
         Rather than take the Fourier transform of the orginal signal, the mean of the signal was first subtracted. If the original signal oscillates about some non-zero offset, the Fourier transform will have a spike at the origin (0 \si{Hz}, or the DC component). To avoid incorrectly classing 0 \si{Hz} as the maximum, we subtract the mean from the original signal. The frequency of maximum amplitude of a power spectrum $X$ is then:
         
-        $$\mathrm{f}_\mathrm{max} = \operatorname*{arg\,max}_f X_f$$
+        $$\mathrm{f}_\mathrm{max} = \argmax_f X_f$$
+        
+        The frequency of maximum amplitude gives the principle frequency of the accelerometer data. For example, humans take between one and two steps in a second, and so we should expect a freqeuncy of maximum amplitude in the $1 \sim 2 \si{Hz}$ range. Indeed, this is empiracally what we see.
         
     \subsection{Machine learning}
+      Classification is supervised learning problem. This requires a classifier to be supplied with a set of instances, comprising sets of features, and a set containing a label for each instance. I use the following notation:
+      \begin{itemize}
+        \item a set of instances $X = \left\{X_1, X_2, \dots, X_N\right\}$ where each $X_i$ is a vector of $j$ features;
+        \item a multiset of labels $y$ where $y_i \in \left\{1, 2, \dots, K\right\}$ is the label for instance $X_i$;
+      \end{itemize}  
+      
+      This set of labelled instances is refered to as the \emph{training set}, which a classifier uses to generate a model. The classifier is then given a set of unlabelled instances, refered to as the \emph{test set}. The true labels of the test set are kept, but unknown to the classifier. The classifier generates a prediction for the test set, and comparison of the predicted labels with the true labels froms the basis of evaluation of the classifier.
+      
+      I used four different classifiers:
+      \begin{itemize}
+        \item Proportionally stratified random classifier
+        \item Naive Bayes classifier
+        \item Decision Tree classifier
+        \item Random Forest classifier
+      \end{itemize}
+      
+      Though each of these classifiers is included in Scikit Learn, the mechanisms of each of these classifiers are explained.
+      
+      \subsubsection{Proprotionally stratified random classifier}
+        The protionally stratified random classifier acts as a dummy classifier. It assigns labels to instances randomly, based on the proportion of the labels in the training set. This classifier is used to establish a baseline for evaluation.
+        
+        Thus, this classifier completely ignores all feature information. Given the training set, the classifier generates, for each $k \in \left\{1, 2, \dots, K\right\}$  a count $c_k$ of the number of times label $k$ appears in the set of labels $y$ i.e. the number of instances that are labelled $k$.
+        
+        Then during the test phase, the outputted label is in each case randomly selected. The probability of a label $k$ being output is $c_k / N$, where $N$ is the total number of instances in the training set.
+        
+        This classifier is only used to provide a baseline measurement against which we can compare other classifiers that do make use of the extracted features.
+        
+      \subsubsection{Naive Bayes classifier}
+        The Naive Bayes classifier makes the naive assumption that all the features in the instance are independent. It then uses Bayesian probability to calculate the most probable class given the instance. 
+        
+        Mathematically we want to find $\mathbb{P}(y_k \mid X_i)$ for each label $y_k$ and each instance $\mathbf{X}_i$.
+        
+      	\begin{flalign*}
+          & & \mathbb{P}(y_k \mid \mathbf{X}_i) &= \mathbb{P}(y_k \mid x_1, x_2, \dots, x_j) &
+          X_i \text{ is a vector of features} & & \\
+      		& & &= \frac{\mathbb{P}(y_k) \mathbb{P}(x_1, x_2, \dots, x_j \mid y_k)}{\mathbb{P}(\mathbf{X}_i)} & 
+          \text{Bayes' rule} & & \\
+          & & & \propto \mathbb{P}(y_k) \mathbb{P}(x_1, x_2, \dots, x_j \mid y_k) & 
+          \mathbb{P}(X_i) \text{ is constant with respect to the label} \\
+          & & & = \mathbb{P}(y_k) \mathbb{P}(x_1 \mid y_k) \mathbb{P}(x_2 \mid y_k) \cdots \mathbb{P}(x_j \mid y_k)  & 
+          \text{Naive independence assumption} & & \\
+          & & & = \mathbb{P}(y_k) \prod\limits_{i=1}^{j} \mathbb{P}(x_i \mid y_k) & 
+          & & \\
+      	\end{flalign*}
+      
+        The task then is to find the most probable label given the data: $$k = \argmax_k \mathbb{P}(y_k) \prod\limits_{i=1}^{j} \mathbb{P}(x_i \mid y_k)$$
+      
+        To calculate the probability of a particular continuous feature value $x_i$ given a label $y_k$, one can assume that the feature values follow a Gaussian distribution. Then, one can calculate the mean $\mu$ and the variance $\sigma^2$ for the value of the feature for a particular class.
+      
+        During the test phase, one can calculate the probability that $x_i$ takes its actual value $v$ given each of the classes using the equation for a normal distribution parameterised by $\mu$ and $\sigma^2$ for that particular class:
+      
+        $$\mathbb{P}(x_i = v \mid y_k) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp \left(-\frac{(v - \mu)^2}{2 \sigma^2}\right)$$
+        
+      \subsubsection{Decision Tree classifier}
+        A decision tree classifier forms a tree where each node is a decision about a feature and labels appear as leaves.
+        
+        The training proceedure for a decision tree classifier builds the tree recursively. For a node $m$, let $Q$ be the set of instance--label pairs in $m$. Create a possible split $\theta = (j, t)$ where $j$ is a feature and $t$ is some thereshold value. Generate two subsets $Q_\mathrm{left}$ and $Q_\mathrm{right}$, where 
+        $$Q_\mathrm{left}(\theta) = \left\{ (\mathbf{X}_i,y_i) \mid x_j <= t \right \}$$
+        $$Q_\mathrm{right}(\theta) = Q \setminus Q_\mathrm{left} = \left\{ (\mathbf{X}_i,y_i) \mid x_j > t \right \}$$
+      
+        The impurity $G$ at $m$ is a measure of how far from a perfect dichotomy the split $\theta$ is for $Q$. The impurity $G$ requires an impurity metric $H$.
+      
+        $$G(Q, \theta) = \frac{|Q_\mathrm{left}(\theta)|}{|Q|} H(Q_\mathrm{left}(\theta)) + \frac{|Q_\mathrm{right}(\theta)|}{|Q|} H(Q_\mathrm{right}(\theta))$$
+      
+        There are two typical functions for the impurity metric $H$: the Gini impurity and the information gain. 
+      
+        The Gini impurity is given by:
+      
+        $$H(\mathbf{X}) = \sum \limits_{i=1}^K f_i(1-f_i) = 1 - \sum \limits_{i=1}^K f_i^2$$
+      
+        The information gain impurity is given by:
+        $$H(\mathbf{X}) = \sum \limits_{i=1}^K f_i \log f_i$$
+      
+        where $f_i$ is the proportion of instances labelled $y_i$ in $\mathbf{X}$ Note that both the Gini impurity and the information gain impurity reach their minimum value, $0$, when $\mathbf{X}$ contains only a single class.
+      
+        The task then for the training phase of the decision tree classifier is to select the split $\theta^*$ that minimises the impurity:
+      
+        $$\theta^* = \argmin_\theta G(Q, \theta)$$
+      
+        The classifier then recursively repeats this process for $Q_\mathrm{left}$ and $Q_\mathrm{right}$ unless:
+        \begin{itemize}
+          \item $Q_\mathrm{left}$ or $Q_\mathrm{right}$ contain a single class, at which point they become a leaf node; or
+          \item a pre-specified maximum depth has been reached; or
+          \item the number of samples sent to the child node is less than a pre-specified minimum.
+        \end{itemize}
+      
+        The introduction of a maximum depth and minimum sample size attempts to reduce the tendency for decision tree classifiers to overfit to the training data.
+      
+        The Scikit-Learn implementation of decision tree classifiers uses an optimised version of the CART (Classification and Regression Trees), developed by Breiman \emph{et al.}\cite{breiman1984classification}. CART only produces binary nodes. 
+      
+      \subsubsection{Random Forest classifier}
+        The random forest classifier is an example of an ensamble classifer, one that makes use of a set of other classifiers. The random forest classifier that trains a collection of decision tree classifiers. Each decision tree classifier finds the best split from a random subset of features, rather than the absolute best split. The outputs from all the decision tree classifiers are then aggregated by the random forest classifier by outputting the modal label.
+        
+        Decision tree classifiers are prone to overfitting, especially when the are deep. The random forest classifier reduces variance by excluding different features from the training set, thus is less prone to overfitting.
+        
+        The cost of a random forest classifier over one single decision tree classifier is the increase in training time and memory requirements and also the loss interpretability of the resulting tree structure. The increased computational time required of a random forest classifier is not such a detriment in this offline processing task, but one might choose either a single decision tree or even a naive Bayes classifier if attempting to classify activities live.
   \section{Summary}
