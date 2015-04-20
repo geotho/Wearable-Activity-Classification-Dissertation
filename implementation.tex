@@ -104,12 +104,53 @@
       \subsubsection{Smartwatch}
       
   \section{Activities and data collection method}
+    I then used the smartphone and smartwatch apps to collect data over a range of activities. This section provides the graphs of the magnitude and the Fourier transform of the magnitude. I used these graphs to better understand the accelerometer readings resulting from different activities and justify the utility of the features I hope to extract from the data.
+    
+    For each activity, I graph an arbitrary ten second snippet as recorded by both the phone and watch. The ten second snippet has been low-pass filtered with a critical frequency of 5Hz, as described in Section~\ref{sec:preprocessing}. The Fourier transform for the same snippet is also provided, so as to display the recording in the frequency domain as well as the time domain. 
     \subsection{Computer use}
+      \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=1.0\textwidth]{2by2computeruse}
+        \caption{Ten seconds of phone and watch data from a computer use activity together with their Fourier transforms.}
+        \label{fig:2by2computeruse}
+      \end{figure}
+      
+      Here is some text about computer use!
     \subsection{Walking}
+      \begin{figure}
+        \centering
+        \includegraphics[width=1.0\textwidth]{2by2walking}
+        \caption{Ten seconds of phone and watch data from a walking activity together with their Fourier transforms.}
+        \label{fig:2by2walking}
+      \end{figure}
     \subsection{Cycling}
+      \begin{figure}
+        \centering
+        \includegraphics[width=1.0\textwidth]{2by2cycling}
+        \caption{Ten seconds of phone and watch data from a cycling activity together with their Fourier transforms.}
+        \label{fig:2by2cycling}
+      \end{figure}
     \subsection{Standing}
+      % \begin{figure}
+      %   \centering
+      %   \includegraphics[width=1.0\textwidth]{2by2standing}
+      %   \caption{Ten seconds of phone and watch data from a standing activity together with their Fourier transforms.}
+      %   \label{fig:2by2standing}
+      % \end{figure}
     \subsection{Playing fussball}
+      \begin{figure}
+        \centering
+        \includegraphics[width=1.0\textwidth]{2by2fussball}
+        \caption{Ten seconds of phone and watch data from a fussball activity together with their Fourier transforms.}
+        \label{fig:2by2fussball}
+      \end{figure}
     \subsection{Stair climbing}
+      \begin{figure}
+        \centering
+        \includegraphics[width=1.0\textwidth]{2by2stairs}
+        \caption{Ten seconds of phone and watch data from a stair climbing activity together with their Fourier transforms.}
+        \label{fig:2by2stairs}
+      \end{figure}
   \section{Data processing}
     The data processing pipeline was written in Python, because of the strength of its numerical, statistical and machine learning libraries. The data processing was done on a computer as opposed to directly on the phone because of the computational demand required of training a classifier. In a real-world use-case, one could imagine classification occuring on a cloud server.
     \subsection{Importing and preprocessing}
@@ -122,6 +163,7 @@
         %read bytes
         %database
       \subsubsection{Preprocessing}
+        \label{sec:preprocessing}
         Data is preprocessed before feature extraction.
         
         The first step is the drop the first and last 10 seconds of each data recording. The justification for this is that these accelerometer recordings will not actually be representative of the activity we are attempting to classify. Rather, they will primarily be recording the starting and ending of an activity.
@@ -250,16 +292,16 @@
         Mathematically we want to find $\mathbb{P}(y_k \mid X_i)$ for each label $y_k$ and each instance $\mathbf{X}_i$.
         
       	\begin{flalign*}
-          & & \mathbb{P}(y_k \mid \mathbf{X}_i) &= \mathbb{P}(y_k \mid x_1, x_2, \dots, x_j) &
-          X_i \text{ is a vector of features} & & \\
-      		& & &= \frac{\mathbb{P}(y_k) \mathbb{P}(x_1, x_2, \dots, x_j \mid y_k)}{\mathbb{P}(\mathbf{X}_i)} & 
-          \text{Bayes' rule} & & \\
-          & & & \propto \mathbb{P}(y_k) \mathbb{P}(x_1, x_2, \dots, x_j \mid y_k) & 
-          \mathbb{P}(X_i) \text{ is constant with respect to the label} \\
-          & & & = \mathbb{P}(y_k) \mathbb{P}(x_1 \mid y_k) \mathbb{P}(x_2 \mid y_k) \cdots \mathbb{P}(x_j \mid y_k)  & 
-          \text{Naive independence assumption} & & \\
-          & & & = \mathbb{P}(y_k) \prod\limits_{i=1}^{j} \mathbb{P}(x_i \mid y_k) & 
-          & & \\
+          \mathbb{P}(y_k \mid \mathbf{X}_i) &= \mathbb{P}(y_k \mid x_1, x_2, \dots, x_j) &
+          X_i \text{ is a vector of features} & \\
+      		&= \frac{\mathbb{P}(y_k) \mathbb{P}(x_1, x_2, \dots, x_j \mid y_k)}{\mathbb{P}(\mathbf{X}_i)} &
+          \text{Bayes' rule} & \\
+          &\propto \mathbb{P}(y_k) \mathbb{P}(x_1, x_2, \dots, x_j \mid y_k) &
+          \mathbb{P}(X_i) \text{ is constant with respect to the label} & \\
+          &= \mathbb{P}(y_k) \mathbb{P}(x_1 \mid y_k) \mathbb{P}(x_2 \mid y_k) \cdots \mathbb{P}(x_j \mid y_k) &
+          \text{Naive independence assumption} & \\
+          &= \mathbb{P}(y_k) \prod\limits_{i=1}^{j} \mathbb{P}(x_i \mid y_k) &
+          & \\
       	\end{flalign*}
       
         The task then is to find the most probable label given the data: $$k = \argmax_k \mathbb{P}(y_k) \prod\limits_{i=1}^{j} \mathbb{P}(x_i \mid y_k)$$
@@ -280,9 +322,11 @@
         The impurity $G$ at $m$ is a measure of how far from a perfect dichotomy the split $\theta$ is for $Q$. The impurity $G$ requires an impurity metric $H$.
       
         $$G(Q, \theta) = \frac{|Q_\mathrm{left}(\theta)|}{|Q|} H(Q_\mathrm{left}(\theta)) + \frac{|Q_\mathrm{right}(\theta)|}{|Q|} H(Q_\mathrm{right}(\theta))$$
-      
+        
+        
+        
         There are two typical functions for the impurity metric $H$: the Gini impurity and the information gain. 
-      
+        
         The Gini impurity is given by:
       
         $$H(\mathbf{X}) = \sum \limits_{i=1}^K f_i(1-f_i) = 1 - \sum \limits_{i=1}^K f_i^2$$
@@ -290,7 +334,7 @@
         The information gain impurity is given by:
         $$H(\mathbf{X}) = \sum \limits_{i=1}^K f_i \log f_i$$
       
-        where $f_i$ is the proportion of instances labelled $y_i$ in $\mathbf{X}$ Note that both the Gini impurity and the information gain impurity reach their minimum value, $0$, when $\mathbf{X}$ contains only a single class.
+        where $f_i$ is the proportion of instances labelled $y_i$ in $\mathbf{X}$. Note that both the Gini impurity and the information gain impurity reach their minimum value, $0$, when $\mathbf{X}$ contains only a single class.
       
         The task then for the training phase of the decision tree classifier is to select the split $\theta^*$ that minimises the impurity:
       
@@ -305,7 +349,10 @@
       
         The introduction of a maximum depth and minimum sample size attempts to reduce the tendency for decision tree classifiers to overfit to the training data.
       
-        The Scikit-Learn implementation of decision tree classifiers uses an optimised version of the CART (Classification and Regression Trees), developed by Breiman \emph{et al.}\cite{breiman1984classification}. CART only produces binary nodes. 
+        The Scikit-Learn implementation of decision tree classifiers uses an optimised version of the CART (Classification and Regression Trees), developed by Breiman \emph{et al.}\cite{breiman1984classification}.
+        
+        A single CART model is easy to intrepret, as it can be illustrated as a set of binary decisions.
+        
       
       \subsubsection{Random Forest classifier}
         The random forest classifier is an example of an ensamble classifer, one that makes use of a set of other classifiers. The random forest classifier that trains a collection of decision tree classifiers. Each decision tree classifier finds the best split from a random subset of features, rather than the absolute best split. The outputs from all the decision tree classifiers are then aggregated by the random forest classifier by outputting the modal label.

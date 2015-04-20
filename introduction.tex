@@ -15,7 +15,7 @@
     One of the primary appeals of wearables is their ability to sense. Like smartphones before them,
     smartwatches will enhance the ability to collect data about people. This data is important to
     consumers, who purchase specialised wearables to measure activity, sleep patterns and 
-    caloric intake. The data's research potential is also laudable --- Apple's ResearchKit will
+    calorific intake. The data's research potential is also laudable --- Apple's ResearchKit will
     allow medical researchers to access data about their patients with greater ease than ever
     before \cite{appleresearchkit}.
         
@@ -25,7 +25,7 @@
     utilises simutaneous collection from a smartphone and smartwatch has not been investigated in
     any detail.
      
-    This dissertation details the implemenation of accelerometer data collection using current 
+    For that reason, this dissertation details the implemenation of accelerometer data collection using current 
     consumer devices (an Android smartphone and Android Wear smartwatch), classifies a user's 
     activities and compares this classification accuracy to using only smartphone data and using 
     only smartwatch data. 
@@ -64,7 +64,7 @@
     
     Long \emph{et al.} \cite{long2009single} use a single triaxial accelerometer placed on the wrist and use it to achieve an $80\%$ activity classification accuracy in five activities. However, only $50\%$ of all cycling is correctly classified. Bao \emph{et al.} achieve an accuracy of $>92\%$ by using thigh and wrist data. This would suggest that wrist data alone is not sufficient to accurately classify certain types of activity. Cycling requires periodic leg motion (pedalling) while the hands and wrists move comparably little. Many of the features of motion used in activity classification require frequency domain analysis, and so data that contains periodic motion will be easier to recognise.
     
-    Atallah \emph{et al.} \cite{atallah2010sensor} focus on two important facets of accelerometer-based activity classifcation: sensor location and useful features. Much like Bao \emph{et al.} they use seven sensors on the chest, arm, wrist, waist, knee, ankle and ear. Of their analysed features, the averaged entropy over three axes, the mean of the pairwise cross-covariance of axes and the energy of a 0.2 Hz window around the main frequency divided by total energy are all highlight as being highly ranked for distinguishing activities. However, this study neglects to use a decision tree classifier in its classification, recommend by both Bao \emph{et al.} and Long \emph{et al.}
+    Atallah \emph{et al.} \cite{atallah2010sensor} focus on two important facets of accelerometer-based activity classification: sensor location and useful features. Much like Bao \emph{et al.} they use seven sensors on the chest, arm, wrist, waist, knee, ankle and ear. Of their analysed features, the averaged entropy over three axes, the mean of the pairwise cross-covariance of axes and the energy of a 0.2 Hz window around the main frequency divided by total energy are all highlighted as being highly ranked for distinguishing activities. However, this study neglects to use a decision tree classifier in its classification, recommended by both Bao \emph{et al.} and Long \emph{et al.}
     \begin{table}[p]
       {\tabulinesep=1.2mm
       \begin{tabu} to \linewidth { p{2cm} X X X}
