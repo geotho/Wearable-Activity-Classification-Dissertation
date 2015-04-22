@@ -1,10 +1,58 @@
 \chapter{Evaluation}
-  \section{Evaluation techniques}
+  \section{Data collection method and data collected}
+    % Statistics about data gathered: how many records, total length etc.
+  
+  \section{Evaluation process}
+    Once the data was gathered, it was processed and features were extracted according to Section~\ref{sec:data-processing}.
+    
+    The data set was then split into training set and a testing set. This was done with a stratified shuffling splitter. This means that the proportional distribution of true labels in the testing set follows that of the training set. Whether an instance is placed in the training set or the testing set is chosen at random.
+    
+    The split was performed 10 times, with elements chosen at random each time. The splitter does not guarantee that the same split will not be made on subsequent splits, but such an event is unlikely given the size of the dataset.
+    
+    The data set was split in the ratio 50:50 training:testing.
+    
+    Once the data had been split, the labels were stripped from the testing data and set aside. Then, three separate instances of each of the four classifiers was trained on the training set. Each of the three instances only had access to features extracted from the phone accelerometer data, features extracted from the watch accelerometer data and both the phone-extracted and the watch-extracted features respectively.
+    
+    Each of the three instances were then tested on the test set and their evaluation metrics --- confusion matrix and $\mathrm{F}_1$ measure --- were calculated by comparing the true labels to the classified labels.
+  \section{Evaluation metrics}
+    Two primary methods of evaluation are used in this project: $\mathrm{F}_1$ measure and the confusion matrix.
+    This section details these methods of evaluation. These metrics are discussed in Sokolova \emph{et al.}\cite{sokolova2009systematic}
+    \subsection{F1 measure}
+      In order to define the $\mathrm{F}_1$ measure, it is necessary to first define precision and recall. In a 
+      \begin{description}
+        \item[Precision], defined as $\frac{\text{True positives}}{\text{True postives} + \text{False positives}}$, is the proportion of instances of a particular label in which the classifier's labels agree with the true labels.
+        \item[Recall], defined as $\frac{\text{True positives}}{\text{True postives} + \text{False negatives}}$, is the proportion of all the instances with a particular label which are labelled as such. 
+      \end{description}
+      
+      The $\mathrm{F}_1$ measure is then defined as the harmonic mean of precision and recall:
+      
+      $$\mathrm{F}_1 = 2 \cdot \frac{\mathrm{precision} \cdot \mathrm{recall}}{\mathrm{precision} + \mathrm{recall}}$$
+      
+      We use the $\mathrm{F}_1$ measure rather than precision or recall in isolation because neither provides sufficient information. It is trivial to maximise recall in isolation: simply label everything. A precision of $1$ indicates everything we have returned is correct, but does not take into account how many instances we have missed.
+    
+      The $\mathrm{F}_1$ measure reaches its best value, $1$, when both precision and recall equal $1$. That is when all the classifier's labels agree with all the true labels and none of the true instances have been mislabeled.
+      
+      Precision and recall, and thus the $\mathrm{F}_1$ measure, are only defined for a single class (i.e. a binary classification problem). As this is a multi-class classification problem, the $\mathrm{F}_1$ measure is reported for each class separately.
+      
+      Because multiple $\mathrm{F}_1$ measures are calculated through separate splits, the mean of the $\mathrm{F}_1$ measure is given together with its standard error. The standard error is given by:
+      $$\mathrm{SE}_{\mathrm{F}_1} = \frac{\sigma}{\sqrt{n}}$$
+      
+      where $\sigma$ is the standard deviation of all measurements of the $\mathrm{F}_1$ measure and $n$ is the number of trials.
+      
+    \subsection{Confusion matrix}
+      A confusion matrix lists the true labels as rows and the classified labels as columns. Any given cell $c_{ij}$ is a count of the number of instances with a true label of $i$ that were classified as label $j$. Confusion matrices display all classifications and misclassifications.
+      
+      The confusion matrices presented in this project are the additions of confusion matrices from separate trials.
+    % F1 measure: define precision and recall first
+    % Confusion matrix
+    
   
   \section{Phone-only measurements}
   
   \section{Watch-only measurements}
   
   \section{Phone and watch measurements}
+  
+  \section{Comparison} 
   
   \section{Feature importances}
