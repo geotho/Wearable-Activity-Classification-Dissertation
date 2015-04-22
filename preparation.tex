@@ -209,11 +209,11 @@
       Gear Live is Bluetooth. To transfer any recorded data from the watch, it must first be transferred to the paired smartphone. 
       The Android Wearable Data Layer API allows communication between Android handheld and wearable
       devices. It provides three methods of communication between devices:
-      \begin{itemize}
-        \item \textbf{Data items} provide data storage with automatic syncing;
-        \item \textbf{Messages} are good for remote procedure calls but do not carry data;
-        \item \textbf{Asset objects} for sending binary blobs of data.
-      \end{itemize}
+      \begin{description}
+        \item[Data items] provide data storage with automatic syncing;
+        \item[Messages] are good for remote procedure calls but do not carry data;
+        \item[Asset objects] for sending binary blobs of data.
+      \end{description}
       
       %TODO: explain this as a diagram with state machine: recording state, recording off state
       The data layer synchronises data between the handheld and wearable. To do so, the Wearable Data Layer API requires the registration of a listener service, much like the Sensor API. The listener service listens for data layer events, such as the creation of asset objects or when messages are received.      
@@ -230,12 +230,12 @@
       The project includes a user interface to configure and control the recording of data.
       
       Python 3.4 was chosen as the data processing language due to its easy of use and the strength of its data processing, signal processing and machine learning libraries:
-      \begin{itemize}
-        \item \textbf{NumPy} is a scientific computing library and the basis for the other three libraries below.
-        \item \textbf{Pandas} provides extensions to NumPy that enable easier processing of time-series data.
-        \item \textbf{SciPy} provides signal processing tools and other statistical features.
-        \item \textbf{Scikit Learn} provides machine learning classifiers and utilities to work with them.
-      \end{itemize}
+      \begin{description}
+        \item[NumPy] a scientific computing library and the basis for the other three libraries below.
+        \item[Pandas] extensions to NumPy that enable easier processing of time-series data.
+        \item[SciPy] signal processing tools and other statistical features.
+        \item[Scikit Learn] machine learning classifiers and utilities to work with them.
+      \end{description}
       All of NumPy, SciPy, Pandas and Scikit Learn are open-source and licensed under the BSD license.
     \subsection{Development Environment}
       Two powerful IDEs, Android Studio and PyCharm were used for the development of the Android app and the Python data pipeline respectively. Android Studio is available for free from Google, while PyCharm is provided free for educational use by JetBrains. Both include advanced debuggers.
@@ -249,7 +249,7 @@
       
       The data processing and machine learning elements of the project required an Agile methodology. The goal here is less well defined --- classify activities with the greatest accuracy --- and the implementation to achieve the goal is far more experimental.
       
-    \subsection{Version Control and Backups}
+    \subsection{Version control and backups}
       I used three separate Git repositories for the data collection code, the data processing code and the dissertation respectively. The Git repositiories were synced to GitHub at each commit. Version control allowed me to follow a \emph{implement--test--commit} pattern when writing code. 
       
       GitHub also served as one method of backup. Each GitHub repository is publicly accessible such that I can continue implementation even if my primary development computer crashed and I was also locked out of my GitHub account. In addition, I backed up periodically to Dropbox and to an external hard drive. The external hard drive backup retained old copies of files when they are updated. This gives four replications of my entire project, with two of these able to access previous versions of the code.  
