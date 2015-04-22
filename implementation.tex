@@ -103,10 +103,13 @@
       
       \subsubsection{Smartwatch}
       
-  \section{Activities and data collection method}
+  \section{Activity analysis}
+    \label{sec:activity-details}
     I then used the smartphone and smartwatch apps to collect data over a range of activities. This section provides the graphs of the magnitude and the Fourier transform of the magnitude. I used these graphs to better understand the accelerometer readings resulting from different activities and justify the utility of the features I hope to extract from the data.
     
-    For each activity, I graph an arbitrary ten second snippet as recorded by both the phone and watch. The ten second snippet has been low-pass filtered with a critical frequency of 5Hz, as described in Section~\ref{sec:preprocessing}. The Fourier transform for the same snippet is also provided, so as to display the recording in the frequency domain as well as the time domain. 
+    For each activity, I graph an arbitrary ten second snippet as recorded by both the phone and watch. The ten second snippet has been low-pass filtered with a critical frequency of 5Hz, as described in Section~\ref{sec:preprocessing}. The Fourier transform for the same snippet is also provided, so as to display the recording in the frequency domain as well as the time domain.
+    
+    For all recordings, the watch was worn tight on the non-dominent left hand and the phone was kept in the right side trouser pocket.
     \subsection{Computer use}
       \begin{figure}[!ht]
         \centering
@@ -115,7 +118,9 @@
         \label{fig:2by2computeruse}
       \end{figure}
       
-      Here is some text about computer use!
+      Computer use is predominently typing or using a laptop trackpad while seated. There is very little movement in the phone, as the leg is stationary. The watch exhibits some periodic movement punctuated by periods of inactivity. This is presumably from typing a word and then pausing.
+      
+      The Fourier transform has quite a peak at just of 4 \si{Hz}. The periodicity of typing is probably higher than any other activity, and so extracting the frequency of maximum power will differentiate this activity well from others.
     \subsection{Walking}
       \begin{figure}
         \centering
@@ -123,6 +128,9 @@
         \caption{Ten seconds of phone and watch data from a walking activity together with their Fourier transforms.}
         \label{fig:2by2walking}
       \end{figure}
+      
+      Walking is perhaps the most periodic of all the activities investigated. There is a very strong peak at 2 Hz, a typical walking pace. The rest of the Fourier transform is relatively flat. A good distinguishing feature for between activies that exhibit strong periodicity is the spectral flatness measure, discussed in Section~\ref{sec:feature-extraction}.
+
     \subsection{Cycling}
       \begin{figure}
         \centering
@@ -130,6 +138,9 @@
         \caption{Ten seconds of phone and watch data from a cycling activity together with their Fourier transforms.}
         \label{fig:2by2cycling}
       \end{figure}
+      Cycling is not as consistently periodic as one might expect, though the phone exhibits some periodicity in the $1 \sim 2 \si{Hz}$ range.
+      
+      There is not much information to be gained 
     \subsection{Standing}
       % \begin{figure}
       %   \centering
@@ -152,6 +163,7 @@
         \label{fig:2by2stairs}
       \end{figure}
   \section{Data processing}
+    \label{sec:data-processing}
     The data processing pipeline was written in Python, because of the strength of its numerical, statistical and machine learning libraries. The data processing was done on a computer as opposed to directly on the phone because of the computational demand required of training a classifier. In a real-world use-case, one could imagine classification occuring on a cloud server.
     \subsection{Importing and preprocessing}
       \subsubsection{Import}
@@ -189,6 +201,7 @@
       
         %10 second overlapping bins
     \subsection{Feature extraction}
+      \label{sec:feature-extraction}
       In total, 22 features are extracted from each window. The smartwatch and smartphone data are treated as separate windows for the purposes of feature extraction. A summary of the extracted features is given in Table~\ref{tab:extracted-features}. This section goes on to describe and justify each of these features.
       
       \begin{table}
@@ -221,8 +234,10 @@
         
       \subsubsection{Maximum amplitude of each axis and magnitude}
         The maximum $x_{\max}$ defined as $$x_{\max} = \max_i x_i $$
-      \subsubsection{Mean average deviation of each axis and magnitude}
-        The mean average deviation $x_\mathrm{mad}$ defined as $$x_\mathrm{mad} = \mathrm{median}_i (|x_i - \mathrm{median}_j(x_j)|)$$
+      \subsubsection{Median average deviation of each axis and magnitude}
+        The median average deviation $x_\mathrm{mad}$ defined as $$x_\mathrm{mad} = \mathrm{median}_i (|x_i - \mathrm{median}_j(x_j)|)$$
+        
+        Though this measure follows the same trend as the standard deviation, its use of the median ensures it is a robust statistic i.e. one that is resistent to outliers and offers good performance on data that is not normally distributed. This is a desirable characteristic in activities such as fussball, as recorded from the wrist.
       \subsubsection{Pairwise correlation coefficient of each of the three axes}
         The covariance is a measure of how much two random variables change together. The covariance of two random variables $X$ and $Y$, $\mathrm{Cov}(X, Y)$ is defined as $$\mathrm{Cov}(X, Y) = \mathbb{E}[(X - \bar{X})(Y - \bar{Y})]$$
         
