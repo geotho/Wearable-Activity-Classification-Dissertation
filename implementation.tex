@@ -110,6 +110,35 @@
     For each activity, I graph an arbitrary ten second snippet as recorded by both the phone and watch. The ten second snippet has been low-pass filtered with a critical frequency of 5Hz, as described in Section~\ref{sec:preprocessing}. The Fourier transform for the same snippet is also provided, so as to display the recording in the frequency domain as well as the time domain.
     
     For all recordings, the watch was worn tight on the non-dominent left hand and the phone was kept in the right side trouser pocket.
+    
+    The activities I recorded were
+    \begin{itemize}
+      \item Climbing
+      \item Computer use
+      \item Cycling
+      \item Eating
+      \item Playing fussball
+      \item Gallery perusal
+      \item Gym cycling
+      \item Running
+      \item Stair climbing
+      \item Standing
+      \item Teeth brushing
+      \item Walking
+    \end{itemize}
+    \subsection{Climbing}
+      \begin{figure}[!th]
+        \centering
+        \includegraphics[width=1.0\textwidth]{2by2climbing}
+        \caption{Ten seconds of phone and watch data from a climbing activity together with their Fourier transforms.}
+        \label{fig:2by2computeruse}
+      \end{figure}
+      
+      I recorded a session of indoor bouldering, which is climbing on short walls with no ropes.
+      
+      Climbing has no period or pattern, as movement is wholly dependent on the routes being climbed. Magnitude of acceleration is unpredicable: moves can be made quickly or slowly.
+      
+      This activity was recorded with the intention of being a challenge to any classifier, and I predict classifications of climbing will be one of the most inaccurate.
     \subsection{Computer use}
       \begin{figure}[!th]
         \centering
@@ -121,18 +150,6 @@
       Computer use is predominently typing or using a laptop trackpad while seated. There is very little movement in the phone, as the leg is mostly   stationary. The watch exhibits some periodic movement punctuated by periods of inactivity. This is presumably from typing a word and then pausing.
       
       The Fourier transform of the watch magnitude indicates that watch movement is also aperiodic, as one might expect from typing with frequent pauses. 
-    \subsection{Walking}
-      \begin{figure}[!th]
-        \centering
-        \includegraphics[width=1.0\textwidth]{2by2walking}
-        \caption{Ten seconds of phone and watch data from a walking activity together with their Fourier transforms.}
-        \label{fig:2by2walking}
-      \end{figure}
-      
-      Walking is among the most periodic of all the activities investigated. There is a very strong peak at about 2 Hz, a typical walking pace. There are smaller local maxima at 1, 3 and 4 Hz in the Fourier transform of the phone magnitude, and peaks at 2 Hz and 4 Hz in the watch magnitude. The rest of the Fourier transform is relatively flat.
-      
-      A good distinguishing feature for between activies that exhibit strong periodicity is the spectral flatness measure, discussed in Section~\ref{sec:feature-extraction}.
-
     \subsection{Cycling}
       \begin{figure}[!th]
         \centering
@@ -141,16 +158,17 @@
         \label{fig:2by2cycling}
       \end{figure}
       Cycling is another activity with high periodicity in the phone measurement, but, unlike walking, does not have much periodicity in the watch measurement. This is primarily because of the changing position on the handlebars.
-    \subsection{Standing}
-      % \begin{figure}
-      %   \centering
-      %   \includegraphics[width=1.0\textwidth]{2by2standing}
-      %   \caption{Ten seconds of phone and watch data from a standing activity together with their Fourier transforms.}
-      %   \label{fig:2by2standing}
-      % \end{figure}
-      Standing as an activity exists to test differentiation between other upright activities such as toothbrushing and fussball. The phone is largely stationary while the watch moves between certain key standing positions (e.g. arm hanging, in pocket, on hip etc.). 
+    \subsection{Eating}
+      \begin{figure}[!th]
+        \centering
+        \includegraphics[width=1.0\textwidth]{2by2eating}
+        \caption{Ten seconds of phone and watch data from an eating activity together with their Fourier transforms.}
+        \label{fig:2by2eating}
+      \end{figure}
       
-      The mean and the standard deviations of the x, y, and z axes of the phone will show standing activities. The lack of movement in the watch could  
+      Eating is a seated activity, so shares much of the phone data with something like computer use. The watch data has more energy, but is aperiodic.
+      
+      A feature that distinguishes amount of movement in the watch should be able to distinguish between eating and computer use activities.
     \subsection{Playing fussball}
       \begin{figure}[!th]
         \centering
@@ -162,6 +180,44 @@
       Fussball (also known as table football) is characterised by periods of inactivity followed by sharp acceleration in the watch measurement. The maximum of the magnitude should in theory differentiate this activity from others.
       
       However, the maximum is by definition a statistic that is highly sensitive to outliers and so other activities may exhibit a similarly high magnitude even if it is not characteristic of that activity. A better metric might be a count of the number of data points that exceed a certain thereshold magnitude e.g. $40 \si{\metre\per\square\second}$ 
+    \subsection{Gallery perusal}
+      \begin{figure}[!th]
+        \centering
+        \includegraphics[width=1.0\textwidth]{2by2gallery}
+        \caption{Ten seconds of phone and watch data from a gallery perusal activity together with their Fourier transforms.}
+        \label{fig:2by2gallery}
+      \end{figure}
+      
+      I recorded data while viewing a gallery exhibition. Gallery perusal presents a unique combination of slow walking and standing.
+      
+      A good classifier would therefore recognise that both walking and standing were present in the recording and classify it as a gallery viewing activity instead. I predict that this activity will also be misclassified often.
+    \subsection{Gym cycling}
+      \begin{figure}[!th]
+        \centering
+        \includegraphics[width=1.0\textwidth]{2by2gymcycling}
+        \caption{Ten seconds of phone and watch data from a gym cycling activity together with their Fourier transforms.}
+        \label{fig:2by2gymcycling}
+      \end{figure}
+      
+      Gym cycling is cycling performed on a fixed cycling machine, as opposed to a bike in the real world.
+      
+      Compared to cycling outdoors, gym cycling has little wrist movement and is more starkly periodic in the phone measurement, as the peddaling action is much more consistent. There is also a lack of linear acceleration in the gym which is present outdoors. Outdoor cycling is often subject to stopping and starting.
+      
+      Both types of cycling activity would benefit from anaylsis of the top two frequencies of maximum power, at they both exhibit very strong peaks at $1 \si{Hz}$ and $2 \si{Hz}$.
+      
+      Using the standard deviation of the magnitude from the watch should be able to distinguish outdoor cycling to gym cycling.
+    \subsection{Running}
+      \begin{figure}[!th]
+        \centering
+        \includegraphics[width=1.0\textwidth]{2by2running}
+        \caption{Ten seconds of phone and watch data from a running activity together with their Fourier transforms.}
+        \label{fig:2by2running}
+      \end{figure}
+      
+      Running was performed outdoors. Running has a strong period in both the watch and the phone at a frequency which is slightly higher than of walking.
+      
+      An analysis of the frequency of maximum amplitude may be suffient to classify this activity, though it might be necessary to deterimine how much bigger the peak is than the rest of the power spectrum.
+      
     \subsection{Stair climbing}
       \begin{figure}[!th]
         \centering
@@ -174,6 +230,39 @@
       This means that stair climbing exhibits a variety of frequencies --- descending stairs is typically done a much quicker pace than climbing stairs, for example. This particular example seems to be drawn from stair descending.
       
       Stairs can be differentiated from walking by noting that though there are still definite periods apparant in the Fourier transform, the peaks are not quite as clear as they are while walking.
+    \subsection{Standing}
+      \begin{figure}
+        \centering
+        \includegraphics[width=1.0\textwidth]{2by2standing}
+        \caption{Ten seconds of phone and watch data from a standing activity together with their Fourier transforms.}
+        \label{fig:2by2standing}
+      \end{figure}
+      Standing as an activity exists to test differentiation between other upright activities such as toothbrushing and fussball. The phone is largely stationary while the watch moves between certain key standing positions (e.g. arm hanging, in pocket, on hip etc.). 
+      
+      The mean and the standard deviations of the x, y, and z axes of the phone will show standing activities. Standing exhibits less periodicity than teeth brushing and exhibits less magnitude than fussball, but this magnitude may only be seen in the watch.
+    \subsection{Teeth brushing}
+      \begin{figure}[!th]
+        \centering
+        \includegraphics[width=1.0\textwidth]{2by2teethbrushing}
+        \caption{Ten seconds of phone and watch data from a toothbrushing activity together with their Fourier transforms.}
+        \label{fig:2by2teethbrushing}
+      \end{figure}
+      
+      Teeth brushing is conducted with my dominent right hand, while the watch is worn on the left. The left hand is often left hanging or resting on the sink. Nevertheless, quite a clear peak is seen on both the watch and the phone recordings of teeth brushing.
+      
+      As the only activity with a peak in the $4 \sim 5 \si{Hz}$ range, it should be easy to distinguish from other activities such as standing.
+    \subsection{Walking}
+      \begin{figure}[!th]
+        \centering
+        \includegraphics[width=1.0\textwidth]{2by2walking}
+        \caption{Ten seconds of phone and watch data from a walking activity together with their Fourier transforms.}
+        \label{fig:2by2walking}
+      \end{figure}
+      
+      Walking is among the most periodic of all the activities investigated. There is a very strong peak at about 2 Hz, a typical walking pace. There are smaller local maxima at 1, 3 and 4 Hz in the Fourier transform of the phone magnitude, and peaks at 2 Hz and 4 Hz in the watch magnitude. The rest of the Fourier transform is relatively flat.
+      
+      A good distinguishing feature for between activies that exhibit strong periodicity is the spectral flatness measure, discussed in Section~\ref{sec:feature-extraction}.
+
   \section{Data processing}
     \label{sec:data-processing}
     The data processing pipeline was written in Python, because of the strength of its numerical, statistical and machine learning libraries. The data processing was done on a computer as opposed to directly on the phone because of the computational demand required of training a classifier. In a real-world use-case, one could imagine classification occuring on a cloud server.
