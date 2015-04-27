@@ -83,6 +83,7 @@
             \begin{itemize}
               \item some constructors don't seem to work
               \item transmission of large files takes a noticable amount of time
+              \item separate data fetching step requires more receiver-side code
             \end{itemize} \\
           \hline
         \end{tabu}}
@@ -98,10 +99,67 @@
       % Use of Asset transmit
       % Sender
       % Receiver
-    \subsection{User interface}
-      \subsubsection{Smartphone}
+    \subsection{Mobile apps}
+      This section concerns the development of the user-facing components of the application. 
       
-      \subsubsection{Smartwatch}
+      Figure~\ref{fig:app_screenshots} presents screenshots of both the smartphone and smartwatch apps produced.
+
+      \begin{figure}[!th]
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{phone_app_screenshot}
+                \caption{The phone app}
+                \label{fig:phone_app_screenshot}
+        \end{subfigure}
+        \qquad
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{wear_app_screenshot}
+                \caption{The watch app}
+                \label{fig:wear_app_screenshot}
+        \end{subfigure}
+        \caption{Screenshots of the phone and the watch apps}
+        \label{fig:app_screenshots}
+      \end{figure}
+      
+      On the smartphone, configuration options are provided on the smartphone. This includes the ability to type a recorder's name and select the activity that is being recorded, which is then included in the recording's filename. A timer is also present, which displays the duration of the current recording so far.
+      
+      Activity recording is started and stopped from the smartwatch. This is because the smartwatch is typically more accessible than the smartphone, being worn on the wrist rather than left in a pocket. This is the only user activity available from the smartwatch.
+      
+      Figure~\ref{fig:recordingstatemachine} illustrates the state machine which models the recording cycle. A typical recording cycle is thus
+      \begin{enumerate}
+        \item The user configures their options on the phone.
+        \item The user begins the recording on the watch.
+        \item The watch messages to the phone app, telling it to begin recording.
+        \item The phone begins recording.
+        \item The user performs the activity.
+        \item The user ends recording on the watch.
+        \item The watch app messages the phone app, telling it to end recording.
+        \item The phone stops recording.
+        \item The watch sends its data to the phone, which requires a separate lifecycle:
+        \begin{enumerate}
+          \item The watch messages the smartphone indicating there is data to transfer.
+          \item The phone sets up the transfer of the data from the watch.
+          \item The phone saves the data from the watch.
+        \end{enumerate}
+        \item The phone also saves its own data.
+      \end{enumerate}
+      
+      \begin{figure}[!th]
+        \centering
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,auto,node distance=4cm]
+          \node[initial,state] (S)                {$\bar{p}\bar{w}$};
+          \node[state]         (q1) [right of=S]  {$\bar{p}w$};
+          \node[state]         (q2) [below of=q1] {$pw$};
+          \node[state]         (q3) [below of=S]  {$p\bar{w}$};
+
+          \path[->] (S) edge           node {start button} (q1)
+                (q1) edge              node {message} (q2)
+                (q2) edge              node {stop button} (q3)
+                (q3) edge              node {message} (S);
+        \end{tikzpicture}
+        \caption{A state machine of the recording cycle. $p$ and $w$ indicate that the phone and watch are recording respectively. Message passing is implemented through the Android Wear API.}
+        \label{fig:recordingstatemachine}
+      \end{figure}
       
   \section{Activity analysis}
     \label{sec:activity-details}
@@ -131,7 +189,7 @@
         \centering
         \includegraphics[width=1.0\textwidth]{2by2climbing}
         \caption{Ten seconds of phone and watch data from a climbing activity together with their Fourier transforms.}
-        \label{fig:2by2computeruse}
+        \label{fig:2by2climbing }
       \end{figure}
       
       I recorded a session of indoor bouldering, which is climbing on short walls with no ropes.
@@ -407,19 +465,24 @@
         
         Mathematically we want to find $\mathbb{P}(y_k \mid X_i)$ for each label $y_k$ and each instance $\mathbf{X}_i$.
         
-      	\begin{flalign*}
+        \begin{flalign*}
           \mathbb{P}(y_k \mid \mathbf{X}_i) &= \mathbb{P}(y_k \mid x_1, x_2, \dots, x_j) &
-          X_i \text{ is a vector of features} & \\
-      		&= \frac{\mathbb{P}(y_k) \mathbb{P}(x_1, x_2, \dots, x_j \mid y_k)}{\mathbb{P}(\mathbf{X}_i)} &
-          \text{Bayes' rule} & \\
+          X_i \text{ is a vector of features} \\
+          &= \frac{\mathbb{P}(y_k) \mathbb{P}(x_1, x_2, \dots, x_j \mid y_k)}{\mathbb{P}(\mathbf{X}_i)} &
+          \text{Bayes' rule} \\
           &\propto \mathbb{P}(y_k) \mathbb{P}(x_1, x_2, \dots, x_j \mid y_k) &
-          \mathbb{P}(X_i) \text{ is constant with respect to the label} & \\
-          &= \mathbb{P}(y_k) \mathbb{P}(x_1 \mid y_k) \mathbb{P}(x_2 \mid y_k) \cdots \mathbb{P}(x_j \mid y_k) &
-          \text{Naive independence assumption} & \\
-          &= \mathbb{P}(y_k) \prod\limits_{i=1}^{j} \mathbb{P}(x_i \mid y_k) &
-          & \\
-      	\end{flalign*}
-      
+          \mathbb{P}(X_i) \text{ is constant w.r.t. the label} \\
+          &= \mathbb{P}(y_k) \mathbb{P}(x_1 \mid y_k) \cdots \mathbb{P}(x_j \mid y_k) &
+          \text{Independence assumption} \\
+          &= \mathbb{P}(y_k) \prod\limits_{i=1}^{j} \mathbb{P}(x_i \mid y_k) & \\
+        \end{flalign*}
+        
+        % \begin{flalign*}
+        % a_{11}& =b_{11}&
+        % a_{12}& =b_{12}\\
+        % a_{21}& =b_{21}&
+        % a_{22}& =b_{22}+c_{22} \end{flalign*}
+
         The task then is to find the most probable label given the data: $$k = \argmax_k \mathbb{P}(y_k) \prod\limits_{i=1}^{j} \mathbb{P}(x_i \mid y_k)$$
       
         To calculate the probability of a particular continuous feature value $x_i$ given a label $y_k$, one can assume that the feature values follow a Gaussian distribution. Then, one can calculate the mean $\mu$ and the variance $\sigma^2$ for the value of the feature for a particular class.
