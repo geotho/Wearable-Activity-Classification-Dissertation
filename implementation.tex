@@ -1,8 +1,17 @@
 \chapter{Implementation}
+  This chapter details the implementation of the three main project areas:
+  \begin{enumerate}
+    \item data collection;
+    \item data processing;
+    \item classification
+  \end{enumerate}
+  
+  It also provides a graphs of a sample recording of each of the activities classified. This process enabled me to better understand the readings recorded during the activities and implement the most useful features at the end.
+  
   \section{Data collection}
     This section contains details of the components built to access the accelerometer data and transfer it to a computer.
     
-    Because both the smartwatch and the smartphone both run Android, it is possible to create components that are shared between the devices, reducing the amount of code I am required to write and to test, resulting in less redundancy, less complexity and ultimately a more reliable implementation. Both the \texttt{AccelerometerListenerService} and the \texttt{AccelerometerDataBlob} are shared between both devices.
+    Because both the smartwatch and the smartphone both run Android, it is possible to create components that are shared between the devices, reducing the amount of code I am required to write and to test, resulting in less redundancy, less complexity and, ultimately, a more reliable implementation. Both the \texttt{AccelerometerListenerService} and the \texttt{AccelerometerDataBlob} are shared between both devices.
     
     \subsection{Accessing the accelerometer}
       The \texttt{AccelerometerListenerService} is responsible for receiving readings from the accelerometer and delivering them to the data structure responsible for storage.
@@ -10,11 +19,11 @@
       As described in Section~\ref{sec:sensor-api}, the Sensor API utilises a listener methodology. It is required to create and register a listener that implements \texttt{onSensorChanged()}. 
       
       \subsubsection{Performance considerations}
-        Because the accelerometer can update its values at a rate of over 50\si{Hz}, it is vital that any implementation of \texttt{onSensorChanged()} be non-blocking and ideally be very quick to execute. Any expensive computation or IO operation has to be moved to a separate thread.
+        Because the accelerometer can update its values at a rate of over 50\si{Hz}, it is vital that any implementation of \texttt{onSensorChanged()} is non-blocking and ideally be very quick to execute. Any expensive computation or IO operation has to be moved to a separate thread.
         
-        If the execution of \texttt{onSensorChanged()} takes longer than $\frac{1}{\mathrm{sample-rate}}$, requests for \texttt{onSensorChanged()} will queue and eventually lead to exhaustion of memory or dropping of data.
+        If the execution of \texttt{onSensorChanged()} takes longer than $\frac{1}{\mathrm{sample-rate}}$, requests for \texttt{onSensorChanged()} will queue and eventually lead to the exhaustion of memory or dropping of data.
         
-        For this reason the data structure used, discussed in Section~\ref{sec:storing-accelerometer-data}, is very lightweight and \texttt{onSensorChanged()} is only responsible for passing data to it.
+        For this reason, the data structure used, discussed in Section~\ref{sec:storing-accelerometer-data}, is very lightweight and \texttt{onSensorChanged()} is only responsible for passing data to it.
       
       \subsubsection{Concurrency considerations}
         Because \texttt{onSensorChanged()} can be called at such a high rate, it is possible that new calls to the method can be made while previous calls are still executing. Data corruption could result from improper handling of asynchronicity.
@@ -22,24 +31,24 @@
         The documentation for the Sensor API is not explicit about whether calls to \texttt{onSensorChanged()} queue on the same thread or whether they can be dispatched asynchronously. For this reason, the \texttt{AccelerometerListenerService} was designed to be thread-safe by using Java concurrency primatives.
       
       \subsubsection{Power consumption considerations}
-        Recording data from the accelerometer can be computationally expensive. This increase in computational overhead translates to an increase in power consumption in battery powered devices such as the smartphone and the smartwatch. It is for this reason that care should be taken to minimise power usage where possible while still collecting all the required data.
+        Recording data from the accelerometer can be computationally expensive. This increase in computational overhead translates to an increase in power consumption in battery powered devices such as the smartphone and the smartwatch. It is for this reason that care should be taken to minimise power usage where possible, while still collecting all the required data.
         
-        One tradeoff that had to be made was between collection strategies. One strategy is to record data at a specified sample rate from when the recording is turned on until it is turned off. An alternative strategy is to record a window of data at set intervals and sleep the remainder of the time. For example, one might set the accelerometer to record 10 seconds of data every 50 seconds.
+        One tradeoff had to be made between collection strategies. One strategy is to record data at a specified sample rate from when the recording is turned on until it is turned off. An alternative strategy is to record a window of data at set intervals and sleep the remainder of the time. For example, one might set the accelerometer to record 10 seconds of data every 50 seconds.
         
         Though this strategy saves battery power as the device turns off the accelerometer between recordings, a continous recording approach was taken in this project in order to have as much data as possible with which to train. In addition, the battery life was not severly impeded by the continous recording approach.
         
         Typically, Android will power off the display and later the CPU after a period of user-inactivity. Powering off the CPU means that the device will stop recording accelerometer data, and so it is required to maintain a wake-lock which keeps the CPU from powering off. It is also important to remember to release the wake-lock once accelerometer recording is complete. Otherwise, the device's CPU will remain on even when the device appears to be on standby, using battery.
         
       \subsubsection{Sampling rate}
-        In ideal conditions, it would be sensible to sample at as fast a rate as possible: the resultant data can always be downsampled afterwards if it is not required. As per the Nyquist-Shannon sampling theory, discussed in Section~\ref{sec:intro-sig-processing}, our sample rate should be greater than twice the highest frequency of the signal. Because it isn't possible to know what the highest frequency is going to be, it would be reasonable to sample at a far higher rate. 
+        In ideal conditions, it would be sensible to sample at the fastest possible: the resultant data can always be downsampled afterwards if it is not required. As per the Nyquist-Shannon sampling theory, discussed in Section~\ref{sec:intro-sig-processing}, our sample rate should be greater than twice the highest frequency of the signal. Because it isn't possible to know what the highest frequency is going to be, it would be reasonable to sample at a far higher rate. 
         
         However, picking a very fast sample rate in this context has two potential downsides: battery life drain and the size of resultant data. I investigated whether either battery life or the size of the resulting data would be a limiting factor of sample rate.
         
-        The impact on power consumption of increasing the sample rate was negliable. One possible reason for this is that sampling using the accelerometer at all has high fixed costs and increasing the sample rate has lower marginal costs.
+        The impact on power consumption when increasing the sample rate was negligible. This may be because sampling with the accelerometer at all has high fixed costs and increasing the sample rate has lower marginal costs.
       
-        Recall from Table~\ref{tab:data-row} that each measurement has a total size of 20 bytes. At a sample rate of 50\si{Hz}, we produce data at approximately 1 KBps or 3.6 MB per hour. The most memory-constrained device is the smartwatch, which only has 512 MB of RAM but 4 GB of internal storage. A data structure that stores the accelerometer data to the internal storage rather than to memory is required, but a sample rate of 50\si{Hz} produces a storable amount of data on reasonable-length activity recording.
+        Recall from Table~\ref{tab:data-row} that each measurement has a total size of 20 bytes. At a sample rate of 50\si{Hz}, data is produced at approximately 1 KBps or 3.6 MB per hour. The most memory-constrained device is the smartwatch, which only has 512 MB of RAM but 4 GB of internal storage. A data structure that stores the accelerometer data to the internal storage rather than to memory is required, but a sample rate of 50\si{Hz} produces a storable amount of data on any reasonable-length (i.e. up to one hour) activity recording.
         
-        Another potential concern regarding data size is the transfer from the smartwatch to the smartphone. The only connection available is Bluetooth. The Bluetooth connection empircally has a maximum transfer rate of no more than 150 KBps, meaning an hour of activity data will take approximately 30 seconds to transfer.
+        Another potential concern regarding data size is the transfer from the smartwatch to the smartphone. The only connection available is Bluetooth. The Bluetooth connection empirically has a maximum transfer rate of no more than 150 KBps, meaning an hour of activity data will take approximately 30 seconds to transfer.
 
     \subsection{Storing accelerometer data}
       \label{sec:storing-accelerometer-data}
@@ -56,7 +65,7 @@
       % local temporary internal storage as opposed to memory
       % delete when transmitted
     \subsection{Transmitting accelerometer data}
-      The accelerometer data has to be transmitted from the smartwatch to the smartphone before it can be transferred to a computer. As discussed in Section~\ref{sec:prep-data-api}, there are two methods to transfer data between the smartwatch and the smartphone: a DataItem and an Asset. Their advantages and disadvantages with respect to this project are highlighted in Table~\ref{tab:dataitem-vs-asset}.
+      The accelerometer data has to be transmitted from the smartwatch to the smartphone before it can be transferred to a computer. As discussed in Section~\ref{sec:prep-data-api}, there are two relevant methods to transfer data between the smartwatch and the smartphone: a DataItem and an Asset. Their advantages and disadvantages with respect to this project are highlighted in Table~\ref{tab:dataitem-vs-asset}.
       
       \begin{table}
         \centering
@@ -161,9 +170,13 @@
         \label{fig:recordingstatemachine}
       \end{figure}
       
+      A decision that had to be made was whether it was required for the recordings to start at precisely the same time, as the message parsing between the watch and the phone to signal the start of the recording is fast but it is not instant. 
+      
+      Recordings starting at exactly the same time mean that it may be easier to correlate movements between devices, but it this doesn't seem to be particularly useful if the message parsing means the records start within microseconds of each other and cross-correlation may be able to help align them completely.  
+      
   \section{Activity analysis}
     \label{sec:activity-details}
-    I then used the smartphone and smartwatch apps to collect data over a range of activities. This section provides the graphs of the magnitude and the Fourier transform of the magnitude. I used these graphs to better understand the accelerometer readings resulting from different activities and justify the utility of the features I hope to extract from the data.
+    The apps were used to collect data over a range of activities. This section provides the graphs of the magnitude and the Fourier transform of the magnitude. I used these graphs to better understand the accelerometer readings resulting from different activities and justify the utility of the features I hope to extract from the data.
     
     For each activity, I graph an arbitrary ten second snippet as recorded by both the phone and watch. The ten second snippet has been low-pass filtered with a critical frequency of 5Hz, as described in Section~\ref{sec:preprocessing}. The Fourier transform for the same snippet is also provided, so as to display the recording in the frequency domain as well as the time domain.
     
@@ -184,10 +197,11 @@
       \item Teeth brushing
       \item Walking
     \end{itemize}
+    \pagebreak[4]
     \subsection{Climbing}
       \begin{figure}[!th]
         \centering
-        \includegraphics[width=1.0\textwidth]{2by2climbing}
+        \includegraphics[width=0.8\textwidth]{2by2climbing}
         \caption{Ten seconds of phone and watch data from a climbing activity together with their Fourier transforms.}
         \label{fig:2by2climbing }
       \end{figure}
@@ -197,29 +211,32 @@
       Climbing has no period or pattern, as movement is wholly dependent on the routes being climbed. Magnitude of acceleration is unpredicable: moves can be made quickly or slowly.
       
       This activity was recorded with the intention of being a challenge to any classifier, and I predict classifications of climbing will be one of the most inaccurate.
+    \pagebreak[4]
     \subsection{Computer use}
       \begin{figure}[!th]
         \centering
-        \includegraphics[width=1.0\textwidth]{2by2computeruse}
+        \includegraphics[width=0.8\textwidth]{2by2computeruse}
         \caption{Ten seconds of phone and watch data from a computer use activity together with their Fourier transforms.}
         \label{fig:2by2computeruse}
       \end{figure}
       
-      Computer use is predominently typing or using a laptop trackpad while seated. There is very little movement in the phone, as the leg is mostly   stationary. The watch exhibits some periodic movement punctuated by periods of inactivity. This is presumably from typing a word and then pausing.
+      Computer use is predominently typing or using a laptop trackpad while seated. There is very little movement in the phone, as the leg is mostly stationary. The watch exhibits some periodic movement punctuated by periods of inactivity. This is presumably from typing a word and then pausing.
       
       The Fourier transform of the watch magnitude indicates that watch movement is also aperiodic, as one might expect from typing with frequent pauses. 
+    \pagebreak[4]
     \subsection{Cycling}
       \begin{figure}[!th]
         \centering
-        \includegraphics[width=1.0\textwidth]{2by2cycling}
+        \includegraphics[width=0.8\textwidth]{2by2cycling}
         \caption{Ten seconds of phone and watch data from a cycling activity together with their Fourier transforms.}
         \label{fig:2by2cycling}
       \end{figure}
       Cycling is another activity with high periodicity in the phone measurement, but, unlike walking, does not have much periodicity in the watch measurement. This is primarily because of the changing position on the handlebars.
+    \pagebreak[4]
     \subsection{Eating}
       \begin{figure}[!th]
         \centering
-        \includegraphics[width=1.0\textwidth]{2by2eating}
+        \includegraphics[width=0.8\textwidth]{2by2eating}
         \caption{Ten seconds of phone and watch data from an eating activity together with their Fourier transforms.}
         \label{fig:2by2eating}
       \end{figure}
@@ -227,10 +244,11 @@
       Eating is a seated activity, so shares much of the phone data with something like computer use. The watch data has more energy, but is aperiodic.
       
       A feature that distinguishes amount of movement in the watch should be able to distinguish between eating and computer use activities.
+    \pagebreak[4]
     \subsection{Playing fussball}
       \begin{figure}[!th]
         \centering
-        \includegraphics[width=1.0\textwidth]{2by2fussball}
+        \includegraphics[width=0.8\textwidth]{2by2fussball}
         \caption{Ten seconds of phone and watch data from a fussball activity together with their Fourier transforms.}
         \label{fig:2by2fussball}
       \end{figure}
@@ -238,10 +256,11 @@
       Fussball (also known as table football) is characterised by periods of inactivity followed by sharp acceleration in the watch measurement. The maximum of the magnitude should in theory differentiate this activity from others.
       
       However, the maximum is by definition a statistic that is highly sensitive to outliers and so other activities may exhibit a similarly high magnitude even if it is not characteristic of that activity. A better metric might be a count of the number of data points that exceed a certain thereshold magnitude e.g. $40 \si{\metre\per\square\second}$ 
+    \pagebreak[4]
     \subsection{Gallery perusal}
       \begin{figure}[!th]
         \centering
-        \includegraphics[width=1.0\textwidth]{2by2gallery}
+        \includegraphics[width=0.8\textwidth]{2by2gallery}
         \caption{Ten seconds of phone and watch data from a gallery perusal activity together with their Fourier transforms.}
         \label{fig:2by2gallery}
       \end{figure}
@@ -249,10 +268,11 @@
       I recorded data while viewing a gallery exhibition. Gallery perusal presents a unique combination of slow walking and standing.
       
       A good classifier would therefore recognise that both walking and standing were present in the recording and classify it as a gallery viewing activity instead. I predict that this activity will also be misclassified often.
+    \pagebreak[4]
     \subsection{Gym cycling}
       \begin{figure}[!th]
         \centering
-        \includegraphics[width=1.0\textwidth]{2by2gymcycling}
+        \includegraphics[width=0.8\textwidth]{2by2gymcycling}
         \caption{Ten seconds of phone and watch data from a gym cycling activity together with their Fourier transforms.}
         \label{fig:2by2gymcycling}
       \end{figure}
@@ -264,10 +284,11 @@
       Both types of cycling activity would benefit from anaylsis of the top two frequencies of maximum power, at they both exhibit very strong peaks at $1 \si{Hz}$ and $2 \si{Hz}$.
       
       Using the standard deviation of the magnitude from the watch should be able to distinguish outdoor cycling to gym cycling.
+    \pagebreak[4]
     \subsection{Running}
       \begin{figure}[!th]
         \centering
-        \includegraphics[width=1.0\textwidth]{2by2running}
+        \includegraphics[width=0.8\textwidth]{2by2running}
         \caption{Ten seconds of phone and watch data from a running activity together with their Fourier transforms.}
         \label{fig:2by2running}
       \end{figure}
@@ -276,10 +297,11 @@
       
       An analysis of the frequency of maximum amplitude may be suffient to classify this activity, though it might be necessary to deterimine how much bigger the peak is than the rest of the power spectrum.
       
+    \pagebreak[4]
     \subsection{Stair climbing}
       \begin{figure}[!th]
         \centering
-        \includegraphics[width=1.0\textwidth]{2by2stairs}
+        \includegraphics[width=0.8\textwidth]{2by2stairs}
         \caption{Ten seconds of phone and watch data from a stair climbing activity together with their Fourier transforms.}
         \label{fig:2by2stairs}
       \end{figure}
@@ -288,20 +310,22 @@
       This means that stair climbing exhibits a variety of frequencies --- descending stairs is typically done a much quicker pace than climbing stairs, for example. This particular example seems to be drawn from stair descending.
       
       Stairs can be differentiated from walking by noting that though there are still definite periods apparant in the Fourier transform, the peaks are not quite as clear as they are while walking.
+    \pagebreak[4]
     \subsection{Standing}
-      \begin{figure}
+      \begin{figure}[!th]
         \centering
-        \includegraphics[width=1.0\textwidth]{2by2standing}
+        \includegraphics[width=0.8\textwidth]{2by2standing}
         \caption{Ten seconds of phone and watch data from a standing activity together with their Fourier transforms.}
         \label{fig:2by2standing}
       \end{figure}
       Standing as an activity exists to test differentiation between other upright activities such as toothbrushing and fussball. The phone is largely stationary while the watch moves between certain key standing positions (e.g. arm hanging, in pocket, on hip etc.). 
       
       The mean and the standard deviations of the x, y, and z axes of the phone will show standing activities. Standing exhibits less periodicity than teeth brushing and exhibits less magnitude than fussball, but this magnitude may only be seen in the watch.
+    \pagebreak[4]
     \subsection{Teeth brushing}
       \begin{figure}[!th]
         \centering
-        \includegraphics[width=1.0\textwidth]{2by2teethbrushing}
+        \includegraphics[width=0.8\textwidth]{2by2teethbrushing}
         \caption{Ten seconds of phone and watch data from a toothbrushing activity together with their Fourier transforms.}
         \label{fig:2by2teethbrushing}
       \end{figure}
@@ -309,41 +333,42 @@
       Teeth brushing is conducted with my dominent right hand, while the watch is worn on the left. The left hand is often left hanging or resting on the sink. Nevertheless, quite a clear peak is seen on both the watch and the phone recordings of teeth brushing.
       
       As the only activity with a peak in the $4 \sim 5 \si{Hz}$ range, it should be easy to distinguish from other activities such as standing.
+    \pagebreak[4]
     \subsection{Walking}
       \begin{figure}[!th]
         \centering
-        \includegraphics[width=1.0\textwidth]{2by2walking}
+        \includegraphics[width=0.8\textwidth]{2by2walking}
         \caption{Ten seconds of phone and watch data from a walking activity together with their Fourier transforms.}
         \label{fig:2by2walking}
       \end{figure}
       
-      Walking is among the most periodic of all the activities investigated. There is a very strong peak at about 2 Hz, a typical walking pace. There are smaller local maxima at 1, 3 and 4 Hz in the Fourier transform of the phone magnitude, and peaks at 2 Hz and 4 Hz in the watch magnitude. The rest of the Fourier transform is relatively flat.
+      Walking is among the most periodic of all the activities investigated. There is a very strong peak at about 2 Hz -- a typical walking pace. There are smaller local maxima at 1, 3 and 4 Hz in the Fourier transform of the phone magnitude, and peaks at 2 Hz and 4 Hz in the watch magnitude. The rest of the Fourier transform is relatively flat.
       
-      A good distinguishing feature for between activies that exhibit strong periodicity is the spectral flatness measure, discussed in Section~\ref{sec:feature-extraction}.
+      A useful feature for distinguishing between activies that exhibit strong periodicity is the spectral flatness measure, discussed in Section~\ref{sec:feature-extraction}.
 
   \section{Data processing}
     \label{sec:data-processing}
-    The data processing pipeline was written in Python, because of the strength of its numerical, statistical and machine learning libraries. The data processing was done on a computer as opposed to directly on the phone because of the computational demand required of training a classifier. In a real-world use-case, one could imagine classification occuring on a cloud server.
+    As explained in Section~\ref{sec:programming_languages}, the data processing pipeline was written in Python, because of the strength of its numerical, statistical and machine learning libraries. The data processing was done on a computer as opposed to directly on the phone because of the computational demand required of training a classifier. If this were to be developed for wider use, one might consider using a cloud server for classification.
     \subsection{Importing and preprocessing}
       \subsubsection{Import}
-        Each recording is stored in a separate binary file. The filename is always of the form: \texttt{<timestamp>-<recorder>-<device>-<activity>.dat}. 
+        Each recording is stored in a separate binary file. The filename is always of the form: \texttt{<timestamp>-<recorder>-<device>-<activity>.dat}
         
         NumPy includes methods to specify the types of binary data in a file and create an array from it. These are used to great effect to convert the binary data back into longs and floats.
         
-        Access to the data files is then via a SQLite database, using the timestamp as the unique ID. The database allows easier access to individual records and, for example, all recordings of a certain activity.
+        Data files are then accessed via a SQLite database, using the timestamp as the unique ID. The database allows easier access to individual records and, for example, all recordings of a certain activity.
         %read bytes
         %database
       \subsubsection{Preprocessing}
         \label{sec:preprocessing}
         Data is preprocessed before feature extraction.
         
-        The first step is the drop the first and last 10 seconds of each data recording. The justification for this is that these accelerometer recordings will not actually be representative of the activity we are attempting to classify. Rather, they will primarily be recording the starting and ending of an activity.
+        The first step is the drop the first and last 10 seconds of each data recording. This step is justified as these parts of the accelerometer recordings will not actually be representative of the activity to be classified. Rather, they will primarily be recording the starting and ending of an activity.
         
         For each data recording, the magnitude of the acceleration $\|\mathbf{x}\| = \sqrt{x^2+y^2+z^2}$ was calculated. Patterns in the magnitude were found to be more distinguishing than any of the features extracted from the three axes individually. The magnitude is orientation-invariant, which gives better results when considering that a wrist may move in the same way but may be oriented slightly differently. In this scenario, periodicity will still be observed in the magnitude but may not be observed in each of the three axes individually.
         
         Data is then filtered. As discussed in Section~\ref{sec:intro-sig-processing}, the data recorded by the accelerometer is subject to noise. Reducing the effect of this noise will produce a signal in which it is easier to observe the underlying patterns produced by movement.
         
-        A fifth-order Butterworth Filter with a critical frequency of 5 \si{Hz} was used. The Butterworth Filter was chosen because it has no gain ripple in the pass band or the stop band and because the slow cutoff is not a problem for our application, as the frequencies of activities we are concerned with are far less than the frequency of the noise. A graph of the frequency responses for several Butterworth Filters is given in Figure~\ref{fig:butterworth_filters}.
+        A fifth-order Butterworth Filter with a critical frequency of 5 \si{Hz} was used in order to achieve this. The Butterworth Filter was chosen because it has no gain ripple in the pass band or the stop band. The slow cutoff is not a problem for the application, as the frequencies of activities concerned are far less than the frequency of the noise. A graph of the frequency responses for several Butterworth Filters is given in Figure~\ref{fig:butterworth_filters}.
         
         \begin{figure}
           \centering
@@ -391,13 +416,16 @@
       \subsubsection{Standard deviation of each axis and magnitude}
         The standard deviation $\sigma$ defined as $$\sigma = \sqrt{\frac{1}{n}\sum\limits_{i = 1}^{n}(\bar{x}-x_i)^2}$$ was calculated for each of the x, y and z axes and also for the magnitude.
         
+        The standard deviation gives a measure of how much variation is present in each of the axes, and hence is useful when trying to recognise those activities that consistently have little variation in a particular measure. Gym cycling is one such activity, where the wrist moves comparitively little.
       \subsubsection{Maximum amplitude of each axis and magnitude}
         The maximum $x_{\max}$ defined as $$x_{\max} = \max_i x_i $$
-      \subsubsection{Median average deviation of each axis and magnitude}
-        The median average deviation $x_\mathrm{mad}$ defined as $$x_\mathrm{mad} = \mathrm{median}_i (|x_i - \mathrm{median}_j(x_j)|)$$
         
-        Though this measure follows the same trend as the standard deviation, its use of the median ensures it is a robust statistic i.e. one that is resistent to outliers and offers good performance on data that is not normally distributed. This is a desirable characteristic in activities such as fussball, as recorded from the wrist.
-      \subsubsection{Pairwise correlation coefficient of each of the three axes}
+        The maximum is a potentially useful figure but has the propensity to vary significantly between instances of the same activity. Another, perhaps more useful measure, would be the number of times the magnitude of the acceleration exceeds a certain threshold. 
+      \subsubsection{Median average deviation of each axis and magnitude}
+        The median average deviation $x_\mathrm{mad}$ is defined as $$x_\mathrm{mad} = \mathrm{median}_i (|x_i - \mathrm{median}_j(x_j)|)$$
+        
+        Though this measure follows the same trend as the standard deviation, its use of the median ensures it is a robust statistic --- one that is resistant to outliers --- and offers good performance on data that is not normally distributed. This is a desirable characteristic in activities such as fussball as recorded from the watch, as fussball requires gentle moves interspersed with quick movements with high acceleration.
+      \subsubsection{Pairwise correlation coefficient for each of the three axes}
         The covariance is a measure of how much two random variables change together. The covariance of two random variables $X$ and $Y$, $\mathrm{Cov}(X, Y)$ is defined as $$\mathrm{Cov}(X, Y) = \mathbb{E}[(X - \bar{X})(Y - \bar{Y})]$$
         
         The correlation coefficient, $\mathrm{Cor(X,Y)}$, of two random variables $X$ and $Y$ is the normalised covariance of the two random variables. $$\mathrm{Cor(X,Y)} = \frac{\mathrm{Cov(X,Y)}}{\sigma_{\mathrm{X}}\sigma_{\mathrm{Y}}}$$
@@ -406,31 +434,33 @@
          
         The correlation coefficient was calculated for each pair of axes, producing three features: $\mathrm{Cor(X,Y)}$, $\mathrm{Cor(X,Z)}$, and $\mathrm{Cor(Y,Z)}$. The correlation coefficients give a measure of how much the axes move together during the recording. This encodes some information about the direction of movement.
       \subsubsection{Spectral flatness of magnitude}
-        Spectral flatness is also known as the tonality coefficient. It is a measure of how noise-like or tone-like a signal is. White noise has a spectral flatness approaching 1, while a pure tone has a spectral flatness approaching zero.
+        Spectral flatness is also known as the tonality coefficient. It is a measure of how noise-like or tone-like a signal is. White noise has spectral flatness approaching 1, while a pure tone has spectral flatness approaching zero.
         
         Spectral flatness is calculated from the power spectrum of the signal. Recall from Section~\ref{sec:intro-sig-processing} that the power spectrum is the squared magnitude of the Fourier transform of the signal.
         
-        If $x_i$ represents the magnitude in the power spectrum of bin $i$, then the Flatness of a power spectrum $X = [x_1, x_2, \dots , x_N]$ is defined as
+        If $x_i$ represents the magnitude in the power spectrum of bin $i$, then the spectral flatness of a power spectrum $X = [x_1, x_2, \dots , x_N]$ is defined as
         
         $$\mathrm{Flatness(X)} = \frac{\sqrt[N]{\prod\limits_{i=1}^N x_i}}{\frac{1}{N}\sum_{i=1}^N x_i}$$
         
-        The geometric mean can be expressed as a summation of logarithms rather than a product, giving an alternative formula for the Flatness that does not require a large product or an nth root. As our Fourier transforms are likely to be over 10000 elements long, avoiding the large product or the expensive nth root calculation is desirable. Following conversion to a logarithmic summation, the Flatness is:
+        The geometric mean can be expressed as a summation of logarithms rather than a product, giving an alternative formula for the spectral flatness that does not require a large product or an nth root. As the Fourier transforms in this project are likely to be over 10000 elements long, avoiding the large product or the expensive nth root calculation is desirable. Following conversion to a logarithmic summation, the spectral flatness is:
         
         $$\mathrm{Flatness(X)} = \frac{\exp \left( \frac{1}{N}\sum\limits_{i=1}^N \ln x_i \right) }{\frac{1}{N}\sum_{i=1}^N x_i}$$
         
-        Spectral flatness gives a measure of how periodic a signal is. Activities where there is very high spectral flatness, akin to white noise, are aperiodic. For example, fussball and standing have no associated period, while walking when measured through the smartphone has a clear period.
+        Spectral flatness gives a measure of how periodic a signal is. Activities where there is very high spectral flatness, akin to white noise, are aperiodic. For example, fussball and standing have no associated period, while walking has a clear period when measured through the smartphone.
       \subsubsection{Spectral entropy of the magnitude}
         The spectral entropy of a signal is calculated as the entropy of its power spectrum. It is defined as:
 
         $$\mathrm{entropy} = -\sum\limits_{i=1}^N x_i \log_2 x_i$$
-      \subsubsection{Frequency of maximum amplitude in the power spectrum of the magnitude}
-        The power spectrum of the magnitude shows at which frequencies the power in the signal is distributed. It is defined as the squared magnitude of the Fourier transform of the signal.
         
-        Rather than take the Fourier transform of the orginal signal, the mean of the signal was first subtracted. If the original signal oscillates about some non-zero offset, the Fourier transform will have a spike at the origin (0 \si{Hz}, or the DC component). To avoid incorrectly classing 0 \si{Hz} as the maximum, we subtract the mean from the original signal. The frequency of maximum amplitude of a power spectrum $X$ is then:
+        NOTE: I used this, and it distinguishes walking from other activities, but I have no idea where it came from (a paper I think), there are very few references to it on the web and looking at it again it doesn't seem like it should make any useful output at all. Keep? Have you seen anything like this before?
+      \subsubsection{Frequency of maximum amplitude in the power spectrum of the magnitude}
+        The power spectrum of the magnitude shows the disribution of power in the frequencies of a signal. It is defined as the squared magnitude of the Fourier transform of the signal.
+        
+        Rather than take the Fourier transform of the original signal, the mean of the signal is first subtracted. If the original signal oscillates about some non-zero offset, the Fourier transform will have a spike at the origin (0 \si{Hz}, or the DC component). To avoid incorrectly classing 0 \si{Hz} as the maximum, the mean is subtracted from the original signal. The frequency of maximum amplitude of a power spectrum $X$ is then:
         
         $$\mathrm{f}_\mathrm{max} = \argmax_f X_f$$
         
-        The frequency of maximum amplitude gives the principle frequency of the accelerometer data. For example, humans take between one and two steps in a second, and so we should expect a freqeuncy of maximum amplitude in the $1 \sim 2 \si{Hz}$ range. Indeed, this is empiracally what we see.
+        The frequency of maximum amplitude gives the principle frequency of the accelerometer data. For example, able-bodied people take between one and two steps in a second, and so we should expect a freqeuncy of maximum amplitude in the $1 \sim 2 \si{Hz}$ range. Indeed, this is empirically what we see.
         
     \subsection{Machine learning}
       Classification is supervised learning problem. This requires a classifier to be supplied with a set of instances, comprising sets of features, and a set containing a label for each instance. I use the following notation:
@@ -439,7 +469,7 @@
         \item a multiset of labels $y$ where $y_i \in \left\{1, 2, \dots, K\right\}$ is the label for instance $X_i$;
       \end{itemize}  
       
-      This set of labelled instances is refered to as the \emph{training set}, which a classifier uses to generate a model. The classifier is then given a set of unlabelled instances, refered to as the \emph{test set}. The true labels of the test set are kept, but unknown to the classifier. The classifier generates a prediction for the test set, and comparison of the predicted labels with the true labels froms the basis of evaluation of the classifier.
+      This set of labelled instances is refered to as the \emph{training set}, which a classifier uses to generate a model. The classifier is then given a set of unlabelled instances, refered to as the \emph{test set}. The true labels of the test set are stored, but remain unknown to the classifier. The classifier generates a prediction for the test set, and a comparison between the predicted labels and the true labels forms the basis of any evaluative technique.
       
       I used four different classifiers:
       \begin{itemize}
@@ -452,7 +482,7 @@
       Though each of these classifiers is included in Scikit Learn, the mechanisms of each of these classifiers are explained.
       
       \subsubsection{Proprotionally stratified random classifier}
-        The protionally stratified random classifier acts as a dummy classifier. It assigns labels to instances randomly, based on the proportion of the labels in the training set. This classifier is used to establish a baseline for evaluation.
+        The protionally stratified random classifier acts as a dummy classifier. It randomly assigns labels to instances based on the proportion of the labels in the training set. This classifier is used to establish a baseline for evaluation.
         
         Thus, this classifier completely ignores all feature information. Given the training set, the classifier generates, for each $k \in \left\{1, 2, \dots, K\right\}$  a count $c_k$ of the number of times label $k$ appears in the set of labels $y$ i.e. the number of instances that are labelled $k$.
         
@@ -530,9 +560,8 @@
       
         The Scikit-Learn implementation of decision tree classifiers uses an optimised version of the CART (Classification and Regression Trees), developed by Breiman \emph{et al.}\cite{breiman1984classification}.
         
-        A single CART model is easy to intrepret, as it can be illustrated as a set of binary decisions.
+        A single CART model is easy to intrepret, as it can be illustrated as a set of binary decisions. An actual decision tree created by a Decision Tree classifier trained on my data set can be seen in Figure~\ref{fig:decision-tree} NOTE: this image isn't included because it won't fit onto one page. Perhaps I should just show a portion of it? 
         
-      
       \subsubsection{Random Forest classifier}
         The random forest classifier is an example of an ensamble classifer, one that makes use of a set of other classifiers. The random forest classifier that trains a collection of decision tree classifiers. Each decision tree classifier finds the best split from a random subset of features, rather than the absolute best split. The outputs from all the decision tree classifiers are then aggregated by the random forest classifier by outputting the modal label.
         
@@ -540,3 +569,10 @@
         
         The cost of a random forest classifier over one single decision tree classifier is the increase in training time and memory requirements and also the loss interpretability of the resulting tree structure. The increased computational time required of a random forest classifier is not such a detriment in this offline processing task, but one might choose either a single decision tree or even a naive Bayes classifier if attempting to classify activities live.
   \section{Summary}
+    In this section I have discussed:
+    \begin{itemize}
+      \item the backend and frontend components necessary to collect accelerometer data from the smartphone and smartwatch
+      \item the activities I hope to be able to classify;
+      \item how those activities have influenced the features I have extracted from the data;
+      \item how four different classifiers use labelled instances of those features to classify new instances.
+    \end{itemize}

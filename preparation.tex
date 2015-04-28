@@ -33,7 +33,9 @@
     It is essential to capture as much of the movement as possible. Conversion from continuous 
     physical acceleration to a discrete time-series requires sampling. The Nyquist-Shannon sampling theorem states that a signal can be exactly reconstructed from its samples if the sample rate is greater than twice the highest frequency of the signal.
     
-    The highest frequency of a physical activity is not well defined. The activities I hope to classify will vary in their periodicity. Some, like walking, will be very periodic, while others will have no period at all. Considering common period activities like cycling and walking, I anticipate that the frequencies that best describe movement will be present in the 0--5\si{Hz} range. Graphs of accelerometer readings for each of the activities I attempt to classify are presented in section~\ref{sec:activity-details}. 
+    The highest frequency of a physical activity is not well defined. The activities I hope to classify will vary in their periodicity. Some, like walking, will be very periodic, while others will have no period at all. Considering common period activities like cycling and walking, I anticipate that the frequencies that best describe movement will be present in the 0--5\si{Hz} range, and so will require sampling at a frequency of at least 10\si{Hz}.
+    
+    Graphs of accelerometer readings for each of the activities I attempt to classify are presented in section~\ref{sec:activity-details}. 
     
     \subsubsection{Frequency domain analysis}
       Much of the analysis of the accelerometer readings will be done in the frequency domain. A time domain signal can be converted into the frequency domain using a Fourier transform.
@@ -42,18 +44,18 @@
       
       $$F_k = \sum\limits_{n=0}^{N-1} f_n \cdot \mathrm{e}^{-2\pi \mathrm{i} kn/N}$$
       
-      The power spectral density of a signal describes how power is distributed over different frequencies. One method of estimating the power spectral density is to take the square of the absolute value of the Fourier transform component:
+      The power spectral density, $PSD_k$, of a signal describes how power is distributed over different frequencies. One method of estimating the power spectral density is to take the square of the absolute value of the Fourier transform component:
       
       $$PSD_k = \|F_k\|^2$$
       
     \subsubsection{Noise and filtering}
       The readings from the accelerometer are subject to noise, exhibited in 
-      figure~\ref{fig:x_y_z_flat_plot}, which plots readings from the x, y, and z axes during an hour long recording with the phone laying flat on a table.
+      figure~\ref{fig:x_y_z_flat_plot}, which plots readings from the x, y, and z axes during an hour long recording with the chosen smartphone laying flat on a table.
       
       \begin{figure}
         \centering
         \includegraphics[width=0.8\textwidth]{x_y_z_flat_plot}
-        \caption{The x, y and z axis readings from an hour long accelerometer recording of the phone laying flat on a table. The readings contain noise.}
+        \caption{The x, y and z axis readings from an hour long accelerometer recording of the chosen smartphone laying flat on a table. The readings contain noise.}
         \label{fig:x_y_z_flat_plot}
       \end{figure}
       
@@ -63,7 +65,7 @@
       \begin{figure}
         \centering
         \includegraphics[width=0.8\textwidth]{noise_histogram}
-        \caption{Histogram of the magnitude $\|\mathbf{x}\| = \sqrt{x^2+y^2+z^2}$ of the data shown in Figure~\ref{fig:x_y_z_flat_plot}. The magnitude should measure $ \mathrm{g} = 9.81\si{\metre\per\square\second}$. The noise means the accelerometer data is imprecise. The mean of the data is less than g, which indicates the recording is also inaccurate.}
+        \caption{Histogram of the magnitude $\|\mathbf{x}\| = \sqrt{x^2+y^2+z^2}$ from the data shown in Figure~\ref{fig:x_y_z_flat_plot}. The magnitude should measure $ \mathrm{g} \approx 9.81\si{\metre\per\square\second}$. The noise implies the accelerometer data is imprecise. The mean of the data is less than $\mathrm{g}$, which indicates the recording is also inaccurate.}
         \label{fig:noise_histogram}
       \end{figure}
       
@@ -72,7 +74,7 @@
       \begin{figure}
         \centering
         \includegraphics[width=0.8\textwidth]{noise_prob_plot}
-        \caption{A normal probability plot of the magnitude $\|\mathbf{x}\| = \sqrt{x^2+y^2+z^2}$  of the data shown in Figure~\ref{fig:x_y_z_flat_plot}. Data that is normally distributed will form a straight line when plotted in this way. This data is very likely to be normally distributed.}
+        \caption{A normal probability plot of the magnitude $\|\mathbf{x}\| = \sqrt{x^2+y^2+z^2}$  from the data shown in Figure~\ref{fig:x_y_z_flat_plot}. Data that is normally distributed will form a straight line when plotted in this way. This data is very likely to be normally distributed, as indicated by the straight line.}
         \label{fig:noise_prob_plot}
       \end{figure}
       
@@ -84,7 +86,7 @@
   
   \section{Hardware devices}
     The success of this project depends partly on correct selection and understanding of the devices
-    used to collect data. The devices are both required to contain accelerometers accessible to
+    used to collect data. Both the smartwatch and the smartphone are required to contain accelerometers accessible to
     developers.
     
     Android devices were chosen as Android Wear was the most mature platform for developing with
@@ -94,11 +96,11 @@
     \subsection{Smartphone}
       The smartphone chosen for development was the Google Nexus 5. Smartphone technology has
       advanced to the point that many Android smartphones are homogeneous with respect to this
-      project --- they all continue sufficient processing power, internal memory and an 
+      project --- they all contain sufficient processing power, internal memory and an 
       accerometer capable of recording data.
       
       The Nexus 5 contains a tri-axial accelerometer capable of recording measurements $\pm2\si{g}$
-      on each axis, where $\si{g} \approx 9.81\si{\metre\per\square\second}$.
+      on each axis, where $\si{g} \approx 9.81\si{\metre\per\square\second}$. This gives a total possible magnitude of $\sqrt{3 \times (2\mathrm{g})^2} = 2\mathrm{g}\sqrt{3} \approx 34 \si{\metre\per\square\second}$. Many other smartphones are susceptible to this limit and it is not thought that this will be an issue for classification.
       
       Figure~\ref{fig:nexus-5-accelerometer} shows the front face of a Nexus 5 with the axes of the
       accelerometer labeled.
@@ -117,15 +119,16 @@
       The smartwatch chosen for development was the Samsung Galaxy Gear Live, running Android Wear.
       It pairs to any device running Android 4.4 or higher and communicates over Bluetooth.
       
-      Wearable devices not running Android typically run either Tizen, an open-source but not 
-      widely adopted operating system --- such as the Samsung Galaxy Gear 2 --- or a proprietary 
+      Wearable devices that do not run Android typically run either Tizen, an open-source but not 
+      widely adopted operating system, such as the Samsung Galaxy Gear 2, or a proprietary 
       operating system that does not allow access to the raw accelerometer data, for example the 
       Jawbone Up.
       
-      There is more differentiation in smartwatches as there is in smartphones, with them varying
+      There is more differentiation in smartwatches than there is in smartphones, with them varying
       not just in screen size but also in screen format (round or rectangular), battery life,
       charging facilities and sensors. Table~\ref{tab:smartwatch-features} presents an overview of possible smartwatch devices.
       
+      Though the Sony Smartwatch 3 has the best technical stats, it wasn't yet fully released at the time we acquired the smartwatch. The group has had previous success with Samsung devices and the Gear Live met all the requires I had of the smartwatch for the project.
       \begin{table}
         \centering
         {\tabulinesep=1.2mm
@@ -156,20 +159,19 @@
     
   \section{Libraries and APIs}
       This project makes use of existing libraries and APIs for the data collection, data handling
-      and classification aspects of the project. Preliminary investigation into each of these areas
-      was conducted.
+      and classification aspects of the project. I investigate each library and API early on to ensure I don't encounter any potential show-stopping issues further along. 
     
     \subsection{Android Sensor API}
       \label{sec:sensor-api}
-      The Android platform Sensor API is implemented using a publisher-subscriber model. Listeners
-      to a particular sensor must be registered and must implement an \texttt{onSensorChanged()}
+      The Android platform Sensor API is implemented using a publisher-subscriber model. Listeners must be registered
+      to a particular sensor and must implement an \texttt{onSensorChanged()}
       method. The \texttt{onSensorChanged()} method is called whenever the sensor reports a new 
       value. A \texttt{SensorEvent} object is provided, containing a timestamp at which the data was
       reported together with the new data.
       
-      The rate at which \texttt{onSensorChanged()} is called is user-`suggested'; though it can be 
+      The rate at which \texttt{onSensorChanged()} is called is `user-suggested'; though it can be 
       specified by the user, it can also be altered by the Android system. In practice, this means
-      that the difference in timestamps not constant but is approximately equal to the specified 
+      that the difference in timestamps is not constant but is approximately equal to the specified 
       delay. A histogram of timestamp differences for a particular 1 hour recording is given in 
       figure~\ref{fig:timestamp-differences}.
       
@@ -186,7 +188,7 @@
       
       Android provides both acceleration and linear acceration sensors, related by 
       $$\textrm{acceleration} = \textrm{linear acceleration} + \textrm{gravity}$$
-      They each provide a timestamp represented as a long and three float values representing the 
+      They each provide a timestamp represented as a 64-bit integer (i.e. a long) and three 32-bit float values representing the 
       acceleration of each axis in \si{\metre\per\square\second} at that timestamp.   
       Table~\ref{tab:data-row} gives a graphical representation of the data returned.
       
@@ -205,7 +207,7 @@
         \label{tab:data-row}
       \end{table}
       
-      Curiously, the timestamp returned as part of the data is documented only as ``The time in nanosecond at which the event happened'' \cite{androidsensoreventapi}. Futher exploration reveals that the timestamp is not defined against any particular zero-base, but rather the time since the device was powered on \cite{androidissuedocumentationbug, androidissuehardwarebug}. The implication of this for the project is that while the timestamp can be relied on for intervals between measurements, it cannot be used between different sets of recordings or across devices.
+      Curiously, the timestamp returned as part of the data is documented only as ``The time in nanosecond [sic] at which the event happened'' \cite{androidsensoreventapi}. Futher exploration reveals that the timestamp is not defined against any particular zero-base, but rather the time since the device was powered on \cite{androidissuedocumentationbug, androidissuehardwarebug}. The implication of this for the project is that while the timestamp can be relied on for intervals between measurements, it cannot be used between different sets of recordings or across devices.
       
       %TODO: which are the x y z values of the device's accelerometer?
       
@@ -230,6 +232,7 @@
       
   \section{Choice of tools}
     \subsection{Programming languages}
+      \label{sec:programming_languages}
       Java was chosen as it is the native programming language used on Android. Although it is
       possible to write code for Android in programming languages other than Java, for example 
       by using the Java Native Interface, doing so would not benefit the project. Java is taught in
@@ -239,12 +242,12 @@
       XML is Android's standard markup language. All user-interface components are written in XML.
       The project includes a user interface to configure and control the recording of data.
       
-      Python 3.4 was chosen as the data processing language due to its easy of use and the strength of its data processing, signal processing and machine learning libraries:
+      Python 3.4 was chosen as the data processing language due to its ease of use and the strength of its data processing, signal processing and machine learning libraries:
       \begin{description}
-        \item[NumPy] a scientific computing library and the basis for the other three libraries below.
-        \item[Pandas] extensions to NumPy that enable easier processing of time-series data.
-        \item[SciPy] signal processing tools and other statistical features.
-        \item[Scikit Learn] machine learning classifiers and utilities to work with them.
+        \item[NumPy:] a scientific computing library and the basis for the other three libraries below.
+        \item[Pandas:] extensions to NumPy that enable easier processing of time-series data.
+        \item[SciPy:] signal processing tools and other statistical features.
+        \item[Scikit Learn:] machine learning classifiers and utilities to work with them.
       \end{description}
       All of NumPy, SciPy, Pandas and Scikit Learn are open-source and licensed under the BSD license.
     \subsection{Development Environment}
@@ -255,14 +258,14 @@
     \subsection{Development methodologies}
       I used a combination of development methodologies for the project. The data collection apps were developed using a waterfall methodology, while the data processing was developed using an Agile methodology.
       
-      Waterfall models are excellent when the end goals of the project are known and can be well specified. The goal of the data collection apps can be easily stated: write apps for the smartphone and smartwatch that will allow user collection of accelerometer data.
+      Waterfall models are excellent when the end goals of the project are known and can be well specified. The goal of the data collection apps can be easily stated: to write apps for the smartphone and smartwatch that will allow user collection of accelerometer data.
       
-      The data processing and machine learning elements of the project required an Agile methodology. The goal here is less well defined --- classify activities with the greatest accuracy --- and the implementation to achieve the goal is far more experimental.
+      The data processing and machine learning elements of the project required an Agile methodology. The goal here is less well defined --- to classify activities with the greatest accuracy --- and the implementation to achieve the goal is far more experimental.
       
     \subsection{Version control and backups}
       I used three separate Git repositories for the data collection code, the data processing code and the dissertation respectively. The Git repositiories were synced to GitHub at each commit. Version control allowed me to follow a \emph{implement--test--commit} pattern when writing code. 
       
-      GitHub also served as one method of backup. Each GitHub repository is publicly accessible such that I can continue implementation even if my primary development computer crashed and I was also locked out of my GitHub account. In addition, I backed up periodically to Dropbox and to an external hard drive. The external hard drive backup retained old copies of files when they are updated. This gives four replications of my entire project, with two of these able to access previous versions of the code.  
+      GitHub also served as one method of backup. Each GitHub repository is publicly accessible such that I can continue implementation even if my primary development computer crashed and I was also locked out of my GitHub account. In addition, I backed up periodically to Dropbox and to an external hard drive. The external hard drive backup retained old copies of files when they were updated. This gives four replications of my entire project, with two of these able to access previous versions of the code.  
   \section{Summary}
     In this section I presented:
     \begin{itemize}
