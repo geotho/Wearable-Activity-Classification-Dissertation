@@ -17,14 +17,16 @@
 \usepackage{subcaption}
 \usepackage{tikz}
 \usepackage[section]{placeins}
+\usepackage[font={small,it}]{caption}
 \usetikzlibrary{arrows,automata}
+
 
 \addbibresource{refs.bib}
 
-% \raggedbottom                           % try to avoid widows and orphans
-% \sloppy
-% \clubpenalty1000%
-% \widowpenalty1000%
+\raggedbottom                           % try to avoid widows and orphans
+\sloppy
+\clubpenalty1000%
+\widowpenalty1000%
 \graphicspath{ {figs/} }
 \renewcommand{\baselinestretch}{1.1}    % adjust line spacing to make
                                         % more readable
@@ -94,7 +96,7 @@
 % dissertation.
 %
 %
-% \section*{Work Completed}
+% \section*{Work Completed} 
 %
 % All that has been completed appears in this dissertation.
 %
@@ -141,47 +143,6 @@
 \input{implementation}
 
 \input{evaluation}
-
-% \chapter{Preparation}
-%
-% This chapter is empty!
-%
-% \chapter{Implementation}
-%
-% empty
-%
-% \section{Tables}
-%
-% \begin{samepage}
-% Here is a simple example\footnote{A footnote} of a table.
-%
-% \begin{center}
-% \begin{tabular}{l|c|r}
-% Left      & Centred & Right \\
-% Justified &         & Justified \\[3mm]
-% %\hline\\%[-2mm]
-% First     & A       & XXX \\
-% Second    & AA      & XX  \\
-% Last      & AAA     & X   \\
-% \end{tabular}
-% \end{center}
-%
-% \noindent
-% There is another example table in the proforma.
-% \end{samepage}
-%
-% \chapter{Evaluation}
-%
-% \section{Printing and binding}
-%
-% Use a ``duplex'' laser printer that can print on both sides to print
-% two copies of your dissertation. Then bind them, for example using the
-% comb binder in the Computer Laboratory Library.
-%
-% \chapter{Conclusion}
-%
-% I hope that this rough guide to writing a dissertation is \LaTeX\ has
-% been helpful and saved you time.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
