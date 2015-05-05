@@ -2,6 +2,15 @@
   This dissertation describes the implementation and evaluation of an activity classifier using 
   accelerometer data captured simutaneously from a smartphone and a smartwatch.  
   
+  The aims of the project are:
+  \begin{enumerate}
+    \item to classify activities based on accelerometer recordings from a consumer smartwatch and smartphone; and
+    \item evaluate to what extent the smartwatch is better at helping to classify activities.
+  \end{enumerate}
+  
+  This project is motivated by the unparalleled sensing ability of recently released commodity 
+  smartwatches like the Apple Watch and similar devices. No other device is carried at all times or is worn in exactly the same place against the skin.
+  
   The classifier using data from both sources outperforms a classifier using only smartphone data,
   and the classifier that uses only smartphone data outperforms a classifier using only smartwatch 
   data.
@@ -10,7 +19,8 @@
     Wearable devices are set to become the next big technology trend. Wrist-worn wearables, 
     including smartwatches, formed the majority of the 21m wearable devices sold year. Analysts
     predict the Apple Watch will sell between 20m and 40m in its first nine months 
-    \cite{econapplewatch}.
+    \cite{econapplewatch}. Estimates suggest close to 1m were sold on its first day of release
+    \cite{slice2015applewatch}.
     
     One of the primary appeals of wearables is their ability to sense. Like smartphones before them,
     smartwatches will enhance the ability to collect data about people. This data is important to
@@ -18,12 +28,14 @@
     calorific intake. The data's research potential is also laudable --- Apple's ResearchKit will
     allow medical researchers to access data about their patients with greater ease than ever
     before \cite{appleresearchkit}.
-        
-    Accurate activity classification therefore has many academic and commercial applications. To be
-    marketable, activity classification solutions must use current consumer devices. Though 
-    rudimentary activity classification is available on Android smartphones, an approach that
-    utilises simutaneous collection from a smartphone and smartwatch has not been investigated in
-    any detail.
+    
+    Accelerometer data on its own does not reveal much about the user. In order to report on  
+    fitness or monitor health, determining a user's activities is typically required. Accurate activity classification therefore has many academic and commercial applications. To be
+    marketable, activity classification solutions must use current consumer devices.
+    
+    Though 
+    activity classification is available on Android smartphones, an approach that
+    utilises simutaneous collection from a smartphone and smartwatch warrants further research. A common opinion is that smartwatches will always be more accurate activity classifiers than smartphones because they are worn on the body. The investigation of this dissertation attempts to quantify this position.
      
     For that reason, this dissertation details the implemenation of accelerometer data collection using current 
     consumer devices (an Android smartphone and Android Wear smartwatch), classifies a user's 
@@ -35,18 +47,18 @@
     This project requires knowledge of a variety of disparate areas in computer science. 
     
     Writing software for mobile devices requires knowledge of their paradigms and nuances.
-    Mobile devices are also subject to battery life and computational power constraints and   
+    Mobile devices are also subject to computational power and battery life constraints\cite{rachuri2011sociablesense} and   
     particular care must be taken to build a solution that works in practice.  
     A project that utilises built-in sensors also requires an understanding of the features and 
-    limitations of those sensors and good knowledge in the APIs that are provided to access them.
+    limitations of those sensors and good knowledge of the APIs that are provided to access them.
 
     The sensors also output data at a high rate and care must be taken to correctly handle the
     performance and concurrency issues that may arise. Storage and transfer of large amounts of
     raw data, especially on a memory-limited device such as a smartwatch, also requires special
-    consideration. 
+    consideration: many methods and tools were designed for computers with persistent communication connections and unlimited power consumption.
     
     The data processing aspects of the project will require an understanding of digital signal 
-    processing, Fourier methods, artificial intelligence and machine learning, and statistics.
+    processing, Fourier methods, data mining and machine learning, and statistics.
 
   \section{Related Work}
   \label{sec:intro-relatedwork}

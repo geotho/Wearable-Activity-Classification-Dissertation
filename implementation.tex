@@ -6,12 +6,12 @@
     \item classification
   \end{enumerate}
   
-  It also provides a graphs of a sample recording of each of the activities classified. This process enabled me to better understand the readings recorded during the activities and implement the most useful features at the end.
+  It also provides a graph of a sample recording of each of the activities classified. This process enabled me to better understand the readings recorded during the activities and implement the most useful features at the end.
   
   \section{Data collection}
     This section contains details of the components built to access the accelerometer data and transfer it to a computer.
     
-    Because both the smartwatch and the smartphone both run Android, it is possible to create components that are shared between the devices, reducing the amount of code I am required to write and to test, resulting in less redundancy, less complexity and, ultimately, a more reliable implementation. Both the \texttt{AccelerometerListenerService} and the \texttt{AccelerometerDataBlob} are shared between both devices.
+    Because both the smartwatch and the smartphone both run Android, it is possible to create components that are shared between the devices, resulting in less redundancy, less complexity and, ultimately, a more reliable implementation. Both the \texttt{AccelerometerListenerService} and the \texttt{AccelerometerDataBlob} are shared between both devices.
     
     \subsection{Accessing the accelerometer}
       The \texttt{AccelerometerListenerService} is responsible for receiving readings from the accelerometer and delivering them to the data structure responsible for storage.
@@ -28,23 +28,21 @@
       \subsubsection{Concurrency considerations}
         Because \texttt{onSensorChanged()} can be called at such a high rate, it is possible that new calls to the method can be made while previous calls are still executing. Data corruption could result from improper handling of asynchronicity.
       
-        The documentation for the Sensor API is not explicit about whether calls to \texttt{onSensorChanged()} queue on the same thread or whether they can be dispatched asynchronously. For this reason, the \texttt{AccelerometerListenerService} was designed to be thread-safe by using Java concurrency primatives.
+        The documentation for the Sensor API is not explicit about whether calls to \texttt{onSensorChanged()} queue on the same thread or whether they can be dispatched asynchronously. For this reason, the \texttt{AccelerometerListenerService} was designed to be thread-safe by using Java concurrency primitives.
       
       \subsubsection{Power consumption considerations}
-        Recording data from the accelerometer can be computationally expensive. This increase in computational overhead translates to an increase in power consumption in battery powered devices such as the smartphone and the smartwatch. It is for this reason that care should be taken to minimise power usage where possible, while still collecting all the required data.
+        Typically, Android will power off the display and later the CPU after a period of user-inactivity. Powering off the CPU means that the device will stop recording accelerometer data, and so it is required to maintain a wake-lock which keeps the CPU from powering off. It is also important to remember to release the wake-lock once accelerometer recording is complete. Otherwise, the device's CPU will remain on even when the device appears to be on standby, using battery. It is for this reason that care should be taken to minimise power usage where possible, while still collecting all the required data.
         
         One tradeoff had to be made between collection strategies. One strategy is to record data at a specified sample rate from when the recording is turned on until it is turned off. An alternative strategy is to record a window of data at set intervals and sleep the remainder of the time. For example, one might set the accelerometer to record 10 seconds of data every 50 seconds.
         
-        Though this strategy saves battery power as the device turns off the accelerometer between recordings, a continous recording approach was taken in this project in order to have as much data as possible with which to train. In addition, the battery life was not severly impeded by the continous recording approach.
-        
-        Typically, Android will power off the display and later the CPU after a period of user-inactivity. Powering off the CPU means that the device will stop recording accelerometer data, and so it is required to maintain a wake-lock which keeps the CPU from powering off. It is also important to remember to release the wake-lock once accelerometer recording is complete. Otherwise, the device's CPU will remain on even when the device appears to be on standby, using battery.
+        Though the latter strategy saves battery power as the device turns off the accelerometer between recordings, a continous recording approach was taken in this project in order to have as much data as possible. In addition, the battery life was not severly impeded by the continous recording approach.
         
       \subsubsection{Sampling rate}
-        In ideal conditions, it would be sensible to sample at the fastest possible: the resultant data can always be downsampled afterwards if it is not required. As per the Nyquist-Shannon sampling theory, discussed in Section~\ref{sec:intro-sig-processing}, our sample rate should be greater than twice the highest frequency of the signal. Because it isn't possible to know what the highest frequency is going to be, it would be reasonable to sample at a far higher rate. 
+        In ideal conditions, it would be sensible to sample at the fastest possible rate: the resultant data can always be downsampled afterwards if it is not required. As per the Nyquist-Shannon sampling theory, discussed in Section~\ref{sec:intro-sig-processing}, our sample rate should be greater than twice the highest frequency of the signal. Because it isn't possible to know what the highest frequency is going to be, it would be reasonable to sample at a far higher rate. 
         
         However, picking a very fast sample rate in this context has two potential downsides: battery life drain and the size of resultant data. I investigated whether either battery life or the size of the resulting data would be a limiting factor of sample rate.
         
-        The impact on power consumption when increasing the sample rate was negligible. This may be because sampling with the accelerometer at all has high fixed costs and increasing the sample rate has lower marginal costs.
+        The impact on power consumption when increasing the sample rate was negligible. This may be because the increase in extra work as a result of an increased sample rate is negligable compared to the cost of keeping the CPU awake at all.
       
         Recall from Table~\ref{tab:data-row} that each measurement has a total size of 20 bytes. At a sample rate of 50\si{Hz}, data is produced at approximately 1 KBps or 3.6 MB per hour. The most memory-constrained device is the smartwatch, which only has 512 MB of RAM but 4 GB of internal storage. A data structure that stores the accelerometer data to the internal storage rather than to memory is required, but a sample rate of 50\si{Hz} produces a storable amount of data on any reasonable-length (i.e. up to one hour) activity recording.
         
@@ -52,9 +50,9 @@
 
     \subsection{Storing accelerometer data}
       \label{sec:storing-accelerometer-data}
-      The data structure to hold the accelerometer data is required to be:
+      The data structure to hold the accelerometer data on both the phone and the watch is required to be:
       \begin{itemize}
-        \item \textbf{fast} because it will be accessed many times per second and cannot block;
+        \item \textbf{fast} because it will be written to many times per second and cannot block;
         \item \textbf{on-disk} rather than in-memory, because the smartwatch may not have enough free memory to store all the accelerometer data for lengthy recordings;
         \item \textbf{thread-safe} as it is unclear whether calls to \texttt{onSensorChanged()} are queued or concurrent.
       \end{itemize}
@@ -65,6 +63,7 @@
       % local temporary internal storage as opposed to memory
       % delete when transmitted
     \subsection{Transmitting accelerometer data}
+      \label{sec:Transmitting_accelerometer_data}
       The accelerometer data has to be transmitted from the smartwatch to the smartphone before it can be transferred to a computer. As discussed in Section~\ref{sec:prep-data-api}, there are two relevant methods to transfer data between the smartwatch and the smartphone: a DataItem and an Asset. Their advantages and disadvantages with respect to this project are highlighted in Table~\ref{tab:dataitem-vs-asset}.
       
       \begin{table}
@@ -132,11 +131,11 @@
       
       On the smartphone, configuration options are provided on the smartphone. This includes the ability to type a recorder's name and select the activity that is being recorded, which is then included in the recording's filename. A timer is also present, which displays the duration of the current recording so far.
       
-      Activity recording is started and stopped from the smartwatch. This is because the smartwatch is typically more accessible than the smartphone, being worn on the wrist rather than left in a pocket. This is the only user activity available from the smartwatch.
+      Activity recording is started and stopped from the smartwatch. This is because the smartwatch is typically more accessible than the smartphone, being worn on the wrist rather than left in a pocket. The user is also free to place the phone anywhere before recording starts. This is the only user activity available from the smartwatch.
       
       Figure~\ref{fig:recordingstatemachine} illustrates the state machine which models the recording cycle. A typical recording cycle is thus
       \begin{enumerate}
-        \item The user configures their options on the phone.
+        \item The user sets their name and the activity they are recording on the phone.
         \item The user begins the recording on the watch.
         \item The watch messages to the phone app, telling it to begin recording.
         \item The phone begins recording.
@@ -182,20 +181,29 @@
     
     For all recordings, the watch was worn tight on the non-dominent left hand and the phone was kept in the right side trouser pocket.
     
-    The activities I recorded were
+    I recorded activities that fit into broad ranges:
     \begin{itemize}
-      \item Climbing
-      \item Computer use
-      \item Cycling
-      \item Eating
-      \item Playing fussball
-      \item Gallery perusal
-      \item Gym cycling
-      \item Running
-      \item Stair climbing
-      \item Standing
-      \item Teeth brushing
-      \item Walking
+      \item Physical activities requiring whole body motion:
+      \begin{itemize}
+        \item Climbing
+        \item Cycling
+        \item Gym cycling
+        \item Running
+        \item Stair climbing
+        \item Walking
+      \end{itemize} 
+      \item Activities that primarily require wrist motion:
+      \begin{itemize}
+        \item Computer use
+        \item Eating
+        \item Playing fussball
+      \end{itemize}
+      \item Similar upright activities:
+      \begin{itemize}
+        \item Gallery perusal
+        \item Standing
+        \item Teeth brushing
+      \end{itemize}
     \end{itemize}
     \pagebreak[4]
     \subsection{Climbing}
@@ -210,7 +218,7 @@
       
       Climbing has no period or pattern, as movement is wholly dependent on the routes being climbed. Magnitude of acceleration is unpredicable: moves can be made quickly or slowly.
       
-      This activity was recorded with the intention of being a challenge to any classifier, and I predict classifications of climbing will be one of the most inaccurate.
+      
     \pagebreak[4]
     \subsection{Computer use}
       \begin{figure}[!th]
@@ -220,7 +228,7 @@
         \label{fig:2by2computeruse}
       \end{figure}
       
-      Computer use is predominently typing or using a laptop trackpad while seated. There is very little movement in the phone, as the leg is mostly stationary. The watch exhibits some periodic movement punctuated by periods of inactivity. This is presumably from typing a word and then pausing.
+      Computer use is predominently typing or using a laptop trackpad while seated. The watch was worn on the left, non-dominant wrist while the phone was kept in the right trouser pocket. There is very little movement in the phone, as the leg is mostly stationary. The watch exhibits some periodic movement punctuated by periods of inactivity. This is presumably from typing a word and then pausing.
       
       The Fourier transform of the watch magnitude indicates that watch movement is also aperiodic, as one might expect from typing with frequent pauses. 
     \pagebreak[4]
@@ -233,6 +241,20 @@
       \end{figure}
       Cycling is another activity with high periodicity in the phone measurement, but, unlike walking, does not have much periodicity in the watch measurement. This is primarily because of the changing position on the handlebars.
     \pagebreak[4]
+    \subsection{Gym cycling}
+      \begin{figure}[!th]
+        \centering
+        \includegraphics[width=0.8\textwidth]{2by2gymcycling}
+        \caption{Ten seconds of phone and watch data from a gym cycling activity together with their Fourier transforms.}
+        \label{fig:2by2gymcycling}
+      \end{figure}
+      
+      Gym cycling is cycling performed on a fixed cycling machine, as opposed to a bike in the real world.
+      
+      Compared to cycling outdoors, gym cycling has little wrist movement and is more starkly periodic in the phone measurement, as the peddaling action is much more consistent. There is also a lack of linear acceleration in the gym which is present outdoors. Outdoor cycling is often subject to stopping and starting.
+      
+      Both types of cycling activity would benefit from anaylsis of the top two frequencies of maximum power, at they both exhibit very strong peaks at $1 \si{Hz}$ and $2 \si{Hz}$.
+    \pagebreak[4]
     \subsection{Eating}
       \begin{figure}[!th]
         \centering
@@ -241,7 +263,7 @@
         \label{fig:2by2eating}
       \end{figure}
       
-      Eating is a seated activity, so shares much of the phone data with something like computer use. The watch data has more energy, but is aperiodic.
+      Eating is a seated activity, so shares much of the phone data with something like computer use, again assuming the phone is in the right trouser pocket. The watch data has more energy, but is aperiodic.
       
       A feature that distinguishes amount of movement in the watch should be able to distinguish between eating and computer use activities.
     \pagebreak[4]
@@ -267,23 +289,7 @@
       
       I recorded data while viewing a gallery exhibition. Gallery perusal presents a unique combination of slow walking and standing.
       
-      A good classifier would therefore recognise that both walking and standing were present in the recording and classify it as a gallery viewing activity instead. I predict that this activity will also be misclassified often.
-    \pagebreak[4]
-    \subsection{Gym cycling}
-      \begin{figure}[!th]
-        \centering
-        \includegraphics[width=0.8\textwidth]{2by2gymcycling}
-        \caption{Ten seconds of phone and watch data from a gym cycling activity together with their Fourier transforms.}
-        \label{fig:2by2gymcycling}
-      \end{figure}
-      
-      Gym cycling is cycling performed on a fixed cycling machine, as opposed to a bike in the real world.
-      
-      Compared to cycling outdoors, gym cycling has little wrist movement and is more starkly periodic in the phone measurement, as the peddaling action is much more consistent. There is also a lack of linear acceleration in the gym which is present outdoors. Outdoor cycling is often subject to stopping and starting.
-      
-      Both types of cycling activity would benefit from anaylsis of the top two frequencies of maximum power, at they both exhibit very strong peaks at $1 \si{Hz}$ and $2 \si{Hz}$.
-      
-      Using the standard deviation of the magnitude from the watch should be able to distinguish outdoor cycling to gym cycling.
+      A good classifier would therefore recognise that both walking and standing were present in the recording and classify it as a gallery viewing activity instead.
     \pagebreak[4]
     \subsection{Running}
       \begin{figure}[!th]
@@ -330,7 +336,7 @@
         \label{fig:2by2teethbrushing}
       \end{figure}
       
-      Teeth brushing is conducted with my dominent right hand, while the watch is worn on the left. The left hand is often left hanging or resting on the sink. Nevertheless, quite a clear peak is seen on both the watch and the phone recordings of teeth brushing.
+      Teeth brushing is conducted with my dominant right hand, while the watch is worn on the left. The phone remains in the right hip pocket. The left hand is often left hanging or resting on the sink. Nevertheless, quite a clear peak is seen on both the watch and the phone recordings of teeth brushing.
       
       Note that this peak is not likely to appear had the teeth brushing be conducted with an electric toothbrush.
       
@@ -350,8 +356,18 @@
 
   \section{Data processing}
     \label{sec:data-processing}
-    As explained in Section~\ref{sec:programming_languages}, the data processing pipeline was written in Python, because of the strength of its numerical, statistical and machine learning libraries. The data processing was done on a computer as opposed to directly on the phone because of the computational demand required of training a classifier. If this were to be developed for wider use, one might consider using a cloud server for classification.
+    As explained in Section~\ref{sec:programming_languages}, the data processing pipeline was written in Python, because of the strength of its numerical, statistical and machine learning libraries. The data processing was done on a computer as opposed to directly on the phone for two reasons:
+    \begin{itemize}
+      \item the computational and memory demand of training a classifier; and
+      \item data processing and extracting features post-hoc permits me to explore different features from the raw data. Feature extraction is a distructive process and so conducting it on-device means I cannot then extract further features in the future. This goes against the agile development methodology.
+    \end{itemize}
+    
+    Extracting features on the watch and the phone would have had one potential upside: the volume of data required to store and to send is greatly reduced. 
+    
+    If this were to be developed for wider use, one might consider using a cloud server for classification.
+  
     \subsection{Importing and preprocessing}
+      \label{sec:importing-and-preprocessing}
       \subsubsection{Import}
         Each recording is stored in a separate binary file. The filename is always of the form: \texttt{<timestamp>-<recorder>-<device>-<activity>.dat}
         
@@ -370,12 +386,16 @@
         
         Data is then filtered. As discussed in Section~\ref{sec:intro-sig-processing}, the data recorded by the accelerometer is subject to noise. Reducing the effect of this noise will produce a signal in which it is easier to observe the underlying patterns produced by movement.
         
-        A fifth-order Butterworth Filter with a critical frequency of 5 \si{Hz} was used in order to achieve this. The Butterworth Filter was chosen because it has no gain ripple in the pass band or the stop band. The slow cutoff is not a problem for the application, as the frequencies of activities concerned are far less than the frequency of the noise. A graph of the frequency responses for several Butterworth Filters is given in Figure~\ref{fig:butterworth_filters}.
+        A fifth-order Butterworth Filter with a critical frequency of 5~  \si{Hz} was used in order to achieve this. The Butterworth Filter was chosen because it has no gain ripple in the pass band or the stop band. The slow cutoff is not a problem for the application, as the frequencies of activities concerned are far less than the frequency of the noise. A graph of the frequency responses for several Butterworth Filters is given in Figure~\ref{fig:butterworth_filters}.
+        
+        The frequency response $G(\omega)$, or gain, of an $n$th-order Butterworth filter whose critical frequency is 1 \si{Hz} is:
+        
+        $$G(\omega) = \sqrt(\frac{1}{1+\omega^{2n}})$$
         
         \begin{figure}
           \centering
           \includegraphics[width=1.0\textwidth]{butterworth_filters}
-          \caption{Frequency response for Butterworth filters of different orders. Each has a critical frequency of 5 \si{Hz}. A fifth-order Butterworth filter was used to filter the noise from the accelerometer data.}
+          \caption{Frequency response for Butterworth filters of different orders. The higher the order, the quicker the cutoff between the pass band and the stop band. Each has a critical frequency of 5~\si{Hz}. At the critical frequency, the frequency response is equal to $\frac{1}{\sqrt{2}}$. A fifth-order Butterworth filter was used to filter the noise from the accelerometer data. }
           \label{fig:butterworth_filters}
         \end{figure}
         
@@ -383,12 +403,12 @@
         %magnitude
         %filtering
       \subsubsection{Windows}
-        Each data recording is split into 10 second windows. Features are extracted from each of these bins individually. Splitting into windows allows the production of multiple feature rows from the same recording. In theory, every window for a particular activity should exhibit extracted features that are consistent. A 10 second window was picked as a balance between producing enough feature rows from collected data and ensuring that several cycles of an activity were included. 
+        Each data recording is split into 10 second windows, as in Hemminki \emph{et al.}\cite{hemminki2013accelerometer}. Features are extracted from each of these bins individually. Splitting into windows allows the production of multiple feature rows from the same recording. In theory, every window for a particular activity should exhibit extracted features that are consistent. A 10 second window was picked as a balance between producing enough feature rows from collected data and ensuring that several cycles of an activity were included. 
       
         %10 second overlapping bins
     \subsection{Feature extraction}
       \label{sec:feature-extraction}
-      In total, 22 features are extracted from each window. The smartwatch and smartphone data are treated as separate windows for the purposes of feature extraction. A summary of the extracted features is given in Table~\ref{tab:extracted-features}. This section goes on to describe and justify each of these features.
+      In total, 22 features are extracted from each window. The smartwatch and smartphone data are treated as separate windows for the purposes of feature extraction. This section goes on to describe and justify each of these features.
       
       \begin{table}
         \centering
@@ -406,7 +426,7 @@
           1 & Frequency of maximum amplitude in the power spectrum of the magnitude \\
           \hline
         \end{tabu}}
-        \caption{A summary of extracted features.}
+        \caption{A summary of extracted features. A total of 22 features were extracted from the phone data, and another 22 features extracted from the watch data.}
         \label{tab:extracted-features}
       \end{table}
       
@@ -454,7 +474,8 @@
 
         $$\mathrm{entropy} = -\sum\limits_{i=1}^N x_i \log_2 x_i$$
         
-        NOTE: I used this, and it distinguishes walking from other activities, but I have no idea where it came from (a paper I think), there are very few references to it on the web and looking at it again it doesn't seem like it should make any useful output at all. Keep? Have you seen anything like this before?
+        This feature is used successfully in Hemminki \emph{et al.}\cite{hemminki2013accelerometer} as a measure of how much information is present in its power spectrum.
+        
       \subsubsection{Frequency of maximum amplitude in the power spectrum of the magnitude}
         The power spectrum of the magnitude shows the disribution of power in the frequencies of a signal. It is defined as the squared magnitude of the Fourier transform of the signal.
         
@@ -464,6 +485,7 @@
         
         The frequency of maximum amplitude gives the principle frequency of the accelerometer data. For example, able-bodied people take between one and two steps in a second, and so we should expect a freqeuncy of maximum amplitude in the $1 \sim 2 \si{Hz}$ range. Indeed, this is empirically what we see.
         
+        A summary of the extracted features is given in Table~\ref{tab:extracted-features}.
     \subsection{Machine learning}
       Classification is supervised learning problem. This requires a classifier to be supplied with a set of instances, comprising sets of features, and a set containing a label for each instance. I use the following notation:
       \begin{itemize}
@@ -474,14 +496,14 @@
       This set of labelled instances is refered to as the \emph{training set}, which a classifier uses to generate a model. The classifier is then given a set of unlabelled instances, refered to as the \emph{test set}. The true labels of the test set are stored, but remain unknown to the classifier. The classifier generates a prediction for the test set, and a comparison between the predicted labels and the true labels forms the basis of any evaluative technique.
       
       I used four different classifiers:
-      \begin{itemize}
-        \item Proportionally stratified random classifier
+      \begin{enumerate}
+        \item Proportionally stratified random classifier (as a baseline)
         \item Naive Bayes classifier
         \item Decision Tree classifier
         \item Random Forest classifier
-      \end{itemize}
+      \end{enumerate}
       
-      Though each of these classifiers is included in Scikit Learn, the mechanisms of each of these classifiers are explained.
+      I used implementations of these classifiers from Scikit Learn, though I explain the mechanisms below.
       
       \subsubsection{Proprotionally stratified random classifier}
         The protionally stratified random classifier acts as a dummy classifier. It randomly assigns labels to instances based on the proportion of the labels in the training set. This classifier is used to establish a baseline for evaluation.
@@ -562,14 +584,18 @@
       
         The Scikit-Learn implementation of decision tree classifiers uses an optimised version of the CART (Classification and Regression Trees), developed by Breiman \emph{et al.}\cite{breiman1984classification}.
         
-        A single CART model is easy to intrepret, as it can be illustrated as a set of binary decisions. An actual decision tree created by a Decision Tree classifier trained on my data set can be seen in Figure~\ref{fig:decision-tree} NOTE: this image isn't included because it won't fit onto one page. Perhaps I should just show a portion of it? 
+        A single CART model is easy to intrepret, as it can be illustrated as a set of binary decisions. An actual decision tree created by a Decision Tree classifier trained on my data set can be seen in Figure~\ref{fig:decision-tree} NOTE: this image isn't included because it won't fit onto one page. Perhaps I should just show a portion of it?
+        
+        The settings I used for the configuration of the decision tree -- known as hyperparameters -- I left at default settings. Optimising hyperparameters was ultimately unnecessary for accurate classification, and is dealt with partially by also using a random forest.
         
       \subsubsection{Random Forest classifier}
-        The random forest classifier is an example of an ensamble classifer, one that makes use of a set of other classifiers. The random forest classifier that trains a collection of decision tree classifiers. Each decision tree classifier finds the best split from a random subset of features, rather than the absolute best split. The outputs from all the decision tree classifiers are then aggregated by the random forest classifier by outputting the modal label.
+        The random forest classifier is an example of an ensemble classifer, one that makes use of a set of other classifiers. The random forest classifier that trains a collection of decision tree classifiers. Each decision tree classifier finds the best split from a random subset of features, rather than the absolute best split. The outputs from all the decision tree classifiers are then aggregated by the random forest classifier by outputting the modal label.
         
         Decision tree classifiers are prone to overfitting, especially when the are deep. The random forest classifier reduces variance by excluding different features from the training set, thus is less prone to overfitting.
         
         The cost of a random forest classifier over one single decision tree classifier is the increase in training time and memory requirements and also the loss interpretability of the resulting tree structure. The increased computational time required of a random forest classifier is not such a detriment in this offline processing task, but one might choose either a single decision tree or even a naive Bayes classifier if attempting to classify activities live.
+        
+        I kept most of the random forest hyperparameters at their default values except for the number of trees to use, which I increased from 10 to 50. More trees increases confidence in results.
   \section{Summary}
     In this section I have discussed:
     \begin{itemize}

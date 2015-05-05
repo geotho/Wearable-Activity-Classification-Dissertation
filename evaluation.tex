@@ -235,9 +235,19 @@
       \caption{Cumulative feature importances for each activity. A random forest classifier was trained with one vs. rest labels and both phone and watch features. The importances of all the phone features and of all the watch features were totalled separately. The average total watch feature importance, $\approx 0.42$ is marked as the dotted line on the graph.}
       \label{fig:FeatureImportancesCumulative}
     \end{figure}
+  \section{Relation to original goals}
+    The goals of the project were:
+    \begin{enumerate}
+      \item to classify activities based on accelerometer recordings from a consumer smartwatch and smartphone; and
+      \item evaluate to what extent the smartwatch is better at helping to classify activities.
+    \end{enumerate}
+    
+    The confusion matrices presented in each of the three sections show correct classification of between 80\% and 90\% of activities, which is between 60\% and 70\% better than a random baseline. Evaluation using $\mathrm{F}_1$ measures show similar improvement.
+    
+    The data does not show the smartwatch to be better at classifying activities on average than the smartphone. However, using data from both devices performs better than either device individually. Certain devices are better for classification of particular activities.  
   \section{Summary}
     In this section I compare $\mathrm{F}_1$ measures per activity and on average over all activities between phone-only features, watch-only features and both phone and watch features classification. I also present confusion matrices for each of these three feature sets.
     
-    In terms of $\mathrm{F}_1$ measure, phone and watch classification outperforms either device individually. Watch classification marginally outperforms phone classification. The range of $\mathrm{F}_1$ measures between the three sets of classification is not large, but this is primarily because there is not much scope to improve on using either device individually: they both individualy score >0.9 on the $\mathrm{F}_1$ measure on average across all activities.
+    In terms of $\mathrm{F}_1$ measure, phone and watch classification outperforms either device individually. Individually neither device can be said to outperform the other on average, but certain devices are better for classification of particular activities. The range of $\mathrm{F}_1$ measures between the three sets of classification is not large, but this is primarily because there is not much scope to improve on using either device individually: they both individualy score \textgreater0.9 on the $\mathrm{F}_1$ measure on average across all activities.
     
     I also use feature importance from decision trees to evaluate phone and watch features. This method calculates that watch features have an average total importance of 0.42 compared to the phone's 0.58. Some activities a total importance as high as 0.6 to watch features, while others are as low as 0.2.

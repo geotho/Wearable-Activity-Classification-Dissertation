@@ -1,0 +1,29 @@
+\chapter{Conclusion}
+  This dissertation has described the implementation and evaluation of a system to record accelerometer data from commodity consumer smartwatches and smartphones and use that data to classify what activity a user was performing.
+  
+  \section{Achievements}
+    The project has met its two original aims: to classify activities based on accelerometer recordings from a consumer smartwatch and smartphone; and evaluate to what extent the smartwatch is better at helping to classify activities.
+    
+  \section{Lessons learnt}
+    This dissertation has been an excellent place to implement concepts learning in Digital Signal Processing, Mobile and Sensor Systems, Information Retrieval and other Computer Science Tripos courses. I have also developed a range of technical skills that are not explicitly covered in the Computer Science Tripos.
+    
+    The machine learning aspects of the project have been highly informative. I have investigated the mechanisms of some key classifiers, discovered some of their nuances and learnt out to avoid many of their failings, such as overfitting.
+    
+    The process of writing the dissertation has also been educational. In particular, writing an evaluation and producing legible, informative graphs from the volume of data available was a challenging process. Deciding what to leave out was often more challenging than deciding what to put in.
+    % Graphs
+    % Results are surprising
+    % 
+  \section{Future work}
+    There are a number of possible directions in which one could expand on the work in this dissertation:
+    
+    \begin{itemize}
+      \item A larger user study would add weight to the conclusions made in this dissertation. People may cycle or walk in different ways, are different shapes and sizes, and may carry the phone or watch in different places. Accurate classification of activities across all people that is invarient to these differences is a harder problem.
+      \item Investigating the extent to which activities recorded from one person can classify the activities of another. A larger user study would help in this instance also. Studies in this area would make progress towards existance to `eigenmotions', shared components of activities that are present in everyone.
+      \item Real time classification of activities, locally or through a cloud server, could enable users to get instant feedback on what the device classifies their current activity as. This could be used to implement a reinforcement learning system, where users can say whether or not the classification is accurate, leading to better classification.
+      \item Using additional contextual information available on smartphones and smartwatches could futher help to classify activities. Some activities are only performed in certain places, and so geolocation could make classification more accurate. One could also use gyroscopic sensors or the microphone of the device.
+    \end{itemize}
+    % Bigger user study
+    % Real time classification
+    % Reinforcement learning
+    % Use of additional contextual information
+    
