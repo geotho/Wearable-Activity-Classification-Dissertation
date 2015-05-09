@@ -18,6 +18,7 @@
 \usepackage{tikz}
 \usepackage[section]{placeins}
 \usepackage[font={small,it}]{caption}
+\usepackage{pdfpages}
 \usetikzlibrary{arrows,automata}
 
 
@@ -69,9 +70,9 @@ Name:               & \bf George Thomas                       \\
 College:            & \bf Peterhouse                     \\
 Project Title:      & \bf Activity classification using wearable devices \\
 Examination:        & \bf Computer Science Tripos -- Part II, July 2015  \\
-Word Count:         & \bf todo \\
-Project Originator: & Dr Neal Lathia                    \\
-Supervisor:         & Dr Neal Lathia                    \\
+Word Count:         & \bf 11342 \\
+Project Originator: & Dr. Neal Lathia                    \\
+Supervisor:         & Dr. Neal Lathia                    \\
 \end{tabular}
 }
 \stepcounter{footnote}
@@ -104,10 +105,10 @@ does not contain material that has already been used to any substantial
 extent for a comparable purpose.
 
 \bigskip
-\leftline{Signed [signature]}
+\leftline{Signed}
 
 \medskip
-\leftline{Date [date]}
+\leftline{Date}
 
 \tableofcontents
 
@@ -116,8 +117,7 @@ extent for a comparable purpose.
 \newpage
 \section*{Acknowledgements}
 
-This document owes much to an earlier version written by Simon Moore.  His help, encouragement and advice was greatly
-appreciated.
+Many thanks to Dr. Neal Lathia for his help and advice, and also to Prof. Cecilia Mascolo for supporting the project and providing required hardware.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % now for the chapters
@@ -139,5 +139,15 @@ appreciated.
 % the bibliography
 \addcontentsline{toc}{chapter}{Bibliography}
 \printbibliography
+
+\pagestyle{empty}
+\vspace*{60mm}
+\begin{center}
+  \Large
+  \textbf{Part II Project Proposal} \\[5mm]
+\end{center}
+
+\includepdf[pages=-]{PartIIProjectProposal}
+
 
 \end{document}

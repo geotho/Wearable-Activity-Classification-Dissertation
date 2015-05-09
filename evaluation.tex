@@ -28,8 +28,8 @@
     \subsection{F1 measure}
       In order to define the $\mathrm{F}_1$ measure, it is necessary to first define precision and recall. In a 
       \begin{description}
-        \item[Precision], defined as $\frac{\text{True positives}}{\text{True postives} + \text{False positives}}$, is the proportion of instances of a particular label in which the classifier's labels agree with the true labels.
-        \item[Recall], defined as $\frac{\text{True positives}}{\text{True postives} + \text{False negatives}}$, is the proportion of all the instances with a particular label which are labelled as such. 
+        \item[Precision], defined as $\frac{\text{True positives}}{\text{True positives} + \text{False positives}}$, is the proportion of instances of a particular label in which the classifier's labels agree with the true labels.
+        \item[Recall], defined as $\frac{\text{True positives}}{\text{True positives} + \text{False negatives}}$, is the proportion of all the instances with a particular label which are labelled as such. 
       \end{description}
       
       The $\mathrm{F}_1$ measure is then defined as the harmonic mean of precision and recall:
@@ -68,11 +68,10 @@
     
     Figure~\ref{fig:F1GraphForEachClassifier_phone} gives the $\mathrm{F}_1$ measures for each activity resulting from classification using each of the four classifiers. The random forest classifier performs best of the four classifiers, outperforming others in 75\% of activities. All three proper classifiers significantly outperform the baseline dummy random classifier.
 
-
     \begin{figure}[htb]
       \centering
       \includegraphics[width=1.0\textwidth]{F1GraphForEachClassifier_phone}
-      \caption{$\mathrm{F}_1$ measures for each activity for each of the four classifiers trained on phone-only features.}
+      \caption[$\mathrm{F}_1$ measures for each activity for each of the four classifiers trained on phone-only features.]{$\mathrm{F}_1$ measures for each activity for each of the four classifiers trained on phone-only features. Best is 1, worst is 0.}
       \label{fig:F1GraphForEachClassifier_phone}
     \end{figure}
     
@@ -81,7 +80,7 @@
     \begin{figure}[htb]
       \centering
       \includegraphics[width=1.0\textwidth]{F1GraphAverage_phone}
-      \caption{Average $\mathrm{F}_1$ measures across all activities for each of the four classifiers trained on phone-only features. Error bars are calculated as the standard error in the mean. Best is 1, worst is 0.}
+      \caption[Average $\mathrm{F}_1$ measures across all activities for each of the four classifiers trained on phone-only features.]{Average $\mathrm{F}_1$ measures across all activities for each of the four classifiers trained on phone-only features. Error bars are calculated as the standard error in the mean.}
       \label{fig:F1GraphAverage_phone} 
     \end{figure}
     
@@ -90,7 +89,7 @@
     From the confusion matrix, we see some of the misclassifications we would expect from phone-only classification:
     \begin{itemize}
       \item Computer use misclassified as eating, and vice versa. Both these activities are the only seated activities and the phone should struggle to differentiate between them.
-      \item Gym cycling misclassified as cycling. Both of these activities exhibit the same pedalling motion in the leg, which phone data alone may struggle to differentiate.
+      \item Gym cycling misclassified as cycling. Both of these activities exhibit the same pedaling motion in the leg, which phone data alone may struggle to differentiate.
       \item Many standing activities have been misclassified as each other, such as fussball, teethbrushing, standing and gallery perusal. Again, the phone data struggles to differentiate these static upright activities from each other.
     \end{itemize}  
     Note that the classifier has almost perfect precision on those activities that require highly periodic leg movements: gym cycling, running and walking. All (bar one) of the instances classified as those activities were correct.
@@ -100,7 +99,7 @@
       \tabcolsep=0.11cm
       \centering
         \input{data/ConfusionMatrix_phone_RandomForestClassifier}
-      \caption{Cumulative confusion matrix from ten trials of the random forest classifier, the best performing of all the classifiers, trained on phone-only features.}
+      \caption[Confusion matrix of the random forest classifier trained on phone-only features]{Cumulative confusion matrix from ten trials of the random forest classifier, the best performing of all the classifiers, trained on phone-only features.}
       \label{tab:ConfusionMatrix_phone_RandomForestClassifier}
     \end{table}
     
@@ -118,25 +117,26 @@
     Standing activities also suffer from higher misclassification when using watch-only features.
     
     Unexpectedly, computer use and eating also are subject to a higher rate of misclassification than when using the phone-only features. Fussball, however, is better classified using the watch as opposed to the phone.
-    \begin{figure}
-      \centering
-      \includegraphics[width=1.0\textwidth]{F1GraphAverage_wear}
-      \caption{Average $\mathrm{F}_1$ measures across all activities for each of the four classifiers trained on watch-only features. Error bars are calculated as the standard error in the mean. Best is 1, worst is 0. The random forest classifier again performs best overall.}
-      \label{fig:F1GraphAverage_wear}
-    \end{figure}
 
     \begin{figure}
       \centering
       \includegraphics[width=1.0\textwidth]{F1GraphForEachClassifier_wear}
-      \caption{$\mathrm{F}_1$ measures for each activity for each of the four classifiers trained on watch-only features.}
+      \caption{$\mathrm{F}_1$ measures for each activity for each of the four classifiers trained on watch-only features. Best is 1, worst is 0.}
       \label{fig:F1GraphForEachClassifier_wear}
+    \end{figure}
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=1.0\textwidth]{F1GraphAverage_wear}
+      \caption[Average $\mathrm{F}_1$ measures across all activities for each of the four classifiers trained on watch-only features]{Average $\mathrm{F}_1$ measures across all activities for each of the four classifiers trained on watch-only features. Error bars are calculated as the standard error in the mean. The random forest classifier again performs best overall.}
+      \label{fig:F1GraphAverage_wear}
     \end{figure}
     
     \begin{table}
       \tabcolsep=0.11cm
       \centering
         \input{data/ConfusionMatrix_wear_RandomForestClassifier}
-      \caption{Cumulative confusion matrix from ten trials of the random forest classifier, the best performing of all the classifiers, trained on watch-only features.}
+      \caption[Confusion matrix of the random forest classifier trained on watch-only features]{Cumulative confusion matrix from ten trials of the random forest classifier, the best performing of all the classifiers, trained on watch-only features.}
       \label{tab:ConfusionMatrix_wear_RandomForestClassifier}
     \end{table}
     
@@ -150,19 +150,19 @@
     
     Table~\ref{tab:ConfusionMatrix_both_RandomForestClassifier} presents a cumulative confusion matrix for the random forest classifier trained on both phone and watch features. Again, the random forest classifier was chosen as the best performing classifier.
     
-    Using both phone and watch features reduces the effect of the broad categories of uncertainty that were present in phone-only and watch-only classification, though in many cases the difference is negliable. The only activity in which using phone and watch features together significantly outperforms either phone or watch classification on its own is in the climbing activitiy.
+    Using both phone and watch features reduces the effect of the broad categories of uncertainty that were present in phone-only and watch-only classification, though in many cases the difference is negligible. The only activity in which using phone and watch features together significantly outperforms either phone or watch classification on its own is in the climbing activitiy.
     
     \begin{figure}
       \centering
       \includegraphics[width=1.0\textwidth]{F1GraphForEachClassifier_both}
-      \caption{$\mathrm{F}_1$ measures for each activity for each of the four classifiers trained on both phone and watch features.}
+      \caption[$\mathrm{F}_1$ measures for each activity for each of the four classifiers trained on both phone and watch features]{$\mathrm{F}_1$ measures for each activity for each of the four classifiers trained on both phone and watch features. Best is 1, worst is 0.}
       \label{fig:F1GraphForEachClassifier_both}
     \end{figure}
     
     \begin{figure}
       \centering
       \includegraphics[width=1.0\textwidth]{F1GraphAverage_both}
-      \caption{Average $\mathrm{F}_1$ measures across all activities for each of the four classifiers trained on both phone and watch features. Error bars are calculated as the standard error in the mean. Best is 1, worst is 0.}
+      \caption[Average $\mathrm{F}_1$ measures across all activities for each of the four classifiers trained on both phone and watch features]{Average $\mathrm{F}_1$ measures across all activities for each of the four classifiers trained on both phone and watch features. Error bars are calculated as the standard error in the mean.}
       \label{fig:F1GraphAverage_both}
     \end{figure}
     
@@ -170,7 +170,7 @@
       \tabcolsep=0.11cm
       \centering
         \input{data/ConfusionMatrix_both_RandomForestClassifier}
-      \caption{Cumulative confusion matrix from ten trials of the random forest classifier, the best performing of all the classifiers, trained on both phone and watch features.}
+      \caption[Confusion matrix of the random forest classifier trained on both phone and watch features features]{Cumulative confusion matrix from ten trials of the random forest classifier, the best performing of all the classifiers, trained on both phone and watch features.}
       \label{tab:ConfusionMatrix_both_RandomForestClassifier}
     \end{table}
   
@@ -181,11 +181,11 @@
     
     Climbing is the only activity in which using both phone and watch feature sets significantly outperforms either feature set on its own. In all other trials, using both the phone and watch feature sets was better but not significantly so. This is not necessarily because using both feature sets performed badly, but because both the phone-only and watch-only feature sets performed well. 
   
-    Figure~\ref{fig:F1Graph_average_f1_per_featureset} averages {$\mathrm{F}_1$ measures across all activities grouped by classifier and feature set. In all three of the classifers, the phone and watch outperform phone-only features and watch-only features. On average, the phone-only and the watch-only features perform equally well.
+    Figure~\ref{fig:F1Graph_average_f1_per_featureset} averages {$\mathrm{F}_1$ measures across all activities grouped by classifier and feature set. In all three of the classifiers, the phone and watch outperform phone-only features and watch-only features. On average, the phone-only and the watch-only features perform equally well.
     
     A particularly interesting result is that phone-only classification performs best in computer use and eating classification; introducing features extracted from watch data actually reduces the accuracy of the classifier. It is paradoxical that adding more data would make classification less accurate, especially as most of the information to be gained from computer use and eating activities should come from the watch rather than the phone.
     
-    One possible reason for this misclassification is the lack of other seated activities. Computer use and eating are the only two seated acitivities. Contrast this to semi-stationary standing activities such as fussball, standing, gallery perusal or teethbrushing. Watch-only classification consistently outperforms phone-only classification in these activities, while phone-only classification scores lower in each case than it does for computer use or for eating. I'd argue that one's ability to classify a certain activity depends very much on the other activities present in the dataset and how fine the nuances are between them. 
+    One possible reason for this misclassification is the lack of other seated activities. Computer use and eating are the only two seated activities. Contrast this to semi-stationary standing activities such as fussball, standing, gallery perusal or teethbrushing. Watch-only classification consistently outperforms phone-only classification in these activities, while phone-only classification scores lower in each case than it does for computer use or for eating. I'd argue that one's ability to classify a certain activity depends very much on the other activities present in the dataset and how fine the nuances are between them. 
     
         The second of the two overall aims of the project was to evaluate to what extent the smartwatch is better at helping to classify activities. Both figures here show the the smartwatch is just as good as the smartphone, outperforming just the smartwatch in some activities and performing marginally better on average, though it is not statistically significant. Using both phone and watch features outperforms both on average and on a per-device level.
     \begin{figure}
@@ -204,7 +204,7 @@
   \section{Feature importances}
     Feature importances can be calculated when using decision trees and random forests. Feature importances, also known as Gini importance, is the normalised total reduction in impurity brought by that feature\cite{breiman2001random}. A feature that can split the whole dataset into exactly two labels would have a feature importance of 1.
     
-    In the case of classifcation using both phone and watch features, we would expect to see a mix of features from both devices.
+    In the case of classification using both phone and watch features, we would expect to see a mix of features from both devices.
     
     Figure~\ref{fig:FeatureImportancesTogether} presents the top five most important features from phone-only, watch-only and both phone and watch classification. The feature importances were averaged from 50 component decision trees of a random forest classifier. As expected, phone and watch features are equally important in the phone and watch classification task. 
     
@@ -220,19 +220,19 @@
     
     Feature importances for some activities are understandable: phone features are more important when classifying stairs, standing and walking. Some, however, make less sense. As discussed earlier, computer use and eating also assign more importance to phone features, while cycling is the activity that assigns the most importance to watch features.
     
-    One possible reason for this observation is that while phone features are good enough to place cycling into a general class of leg-periodic activities, differentiating them requires more information than is available through the phone alone. Though the most charactistic movements could come from one accelerometer, these could be shared with other activities. A second accelerometer that does not necessarily follow those characteristic movements, such as the watch while cycling, could potentially be used to nuance the results and differentiate cycling from, say, cycling in the gym.
+    One possible reason for this observation is that while phone features are good enough to place cycling into a general class of leg-periodic activities, differentiating them requires more information than is available through the phone alone. Though the most characteristic movements could come from one accelerometer, these could be shared with other activities. A second accelerometer that does not necessarily follow those characteristic movements, such as the watch while cycling, could potentially be used to nuance the results and differentiate cycling from, say, cycling in the gym.
     
     \begin{figure}
       \centering
       \includegraphics[width=1.0\textwidth]{FeatureImportancesTogether}
-      \caption{Feature importances of the top five most important features averaged over 50 decision trees in a random forest classifier trained with the three feature sets. Recall that data from the phone and the watch each produce 22 features, and so phone and watch classification has 44 features from which to pick.}
+      \caption[Feature importances of the top five most important features]{Feature importances of the top five most important features averaged over 50 decision trees in a random forest classifier trained with the three feature sets. Recall that data from the phone and the watch each produce 22 features, and so phone and watch classification has 44 features from which to pick.}
       \label{fig:FeatureImportancesTogether}
     \end{figure}
     
     \begin{figure}
       \centering
       \includegraphics[width=1.0\textwidth]{FeatureImportancesCumulative}
-      \caption{Cumulative feature importances for each activity. A random forest classifier was trained with one vs. rest labels and both phone and watch features. The importances of all the phone features and of all the watch features were totalled separately. The average total watch feature importance, $\approx 0.42$ is marked as the dotted line on the graph.}
+      \caption[Cumulative feature importances for each activity]{Cumulative feature importances for each activity. A random forest classifier was trained with one vs. rest labels and both phone and watch features. The importances of all the phone features and of all the watch features were totaled separately. The average total watch feature importance, $\approx 0.42$ is marked as the dotted line on the graph.}
       \label{fig:FeatureImportancesCumulative}
     \end{figure}
   \section{Relation to original goals}
@@ -248,6 +248,6 @@
   \section{Summary}
     In this section I compare $\mathrm{F}_1$ measures per activity and on average over all activities between phone-only features, watch-only features and both phone and watch features classification. I also present confusion matrices for each of these three feature sets.
     
-    In terms of $\mathrm{F}_1$ measure, phone and watch classification outperforms either device individually. Individually neither device can be said to outperform the other on average, but certain devices are better for classification of particular activities. The range of $\mathrm{F}_1$ measures between the three sets of classification is not large, but this is primarily because there is not much scope to improve on using either device individually: they both individualy score \textgreater0.9 on the $\mathrm{F}_1$ measure on average across all activities.
+    In terms of $\mathrm{F}_1$ measure, phone and watch classification outperforms either device individually. Individually neither device can be said to outperform the other on average, but certain devices are better for classification of particular activities. The range of $\mathrm{F}_1$ measures between the three sets of classification is not large, but this is primarily because there is not much scope to improve on using either device individually: they both individually score \textgreater0.9 on the $\mathrm{F}_1$ measure on average across all activities.
     
     I also use feature importance from decision trees to evaluate phone and watch features. This method calculates that watch features have an average total importance of 0.42 compared to the phone's 0.58. Some activities a total importance as high as 0.6 to watch features, while others are as low as 0.2.

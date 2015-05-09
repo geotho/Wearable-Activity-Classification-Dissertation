@@ -165,7 +165,7 @@
                 (q2) edge              node {stop button} (q3)
                 (q3) edge              node {message} (S);
         \end{tikzpicture}
-        \caption{A state machine of the recording cycle. $p$ and $w$ indicate that the phone and watch are recording respectively. Message passing is implemented through the Android Wear API.}
+        \caption[A state machine of the recording cycle]{A state machine of the recording cycle. $p$ and $w$ indicate that the phone and watch are recording respectively. Message passing is implemented through the Android Wear API.}
         \label{fig:recordingstatemachine}
       \end{figure}
       
@@ -181,7 +181,7 @@
     
     For all recordings, the watch was worn tight on the non-dominent left hand and the phone was kept in the right side trouser pocket.
     
-    I recorded activities that fit into broad ranges:
+    Recall from Section~\ref{sec:activities_for_classification} the activities I picked to classify:
     \begin{itemize}
       \item Physical activities requiring whole body motion:
       \begin{itemize}
@@ -192,13 +192,13 @@
         \item Stair climbing
         \item Walking
       \end{itemize} 
-      \item Activities that primarily require wrist motion:
+      \item Activities that primarily require arm motion:
       \begin{itemize}
         \item Computer use
         \item Eating
         \item Playing fussball
       \end{itemize}
-      \item Similar upright activities:
+      \item Low energy upright activities:
       \begin{itemize}
         \item Gallery perusal
         \item Standing
@@ -210,7 +210,7 @@
       \begin{figure}[!th]
         \centering
         \includegraphics[width=0.8\textwidth]{2by2climbing}
-        \caption{Ten seconds of phone and watch data from a climbing activity together with their Fourier transforms.}
+        \caption[Climbing sample]{Ten seconds of phone and watch data from a climbing activity together with their Fourier transforms.}
         \label{fig:2by2climbing }
       \end{figure}
       
@@ -224,7 +224,7 @@
       \begin{figure}[!th]
         \centering
         \includegraphics[width=0.8\textwidth]{2by2computeruse}
-        \caption{Ten seconds of phone and watch data from a computer use activity together with their Fourier transforms.}
+        \caption[Computer use sample]{Ten seconds of phone and watch data from a computer use activity together with their Fourier transforms.}
         \label{fig:2by2computeruse}
       \end{figure}
       
@@ -236,7 +236,7 @@
       \begin{figure}[!th]
         \centering
         \includegraphics[width=0.8\textwidth]{2by2cycling}
-        \caption{Ten seconds of phone and watch data from a cycling activity together with their Fourier transforms.}
+        \caption[Cycling sample]{Ten seconds of phone and watch data from a cycling activity together with their Fourier transforms.}
         \label{fig:2by2cycling}
       \end{figure}
       Cycling is another activity with high periodicity in the phone measurement, but, unlike walking, does not have much periodicity in the watch measurement. This is primarily because of the changing position on the handlebars.
@@ -245,7 +245,7 @@
       \begin{figure}[!th]
         \centering
         \includegraphics[width=0.8\textwidth]{2by2gymcycling}
-        \caption{Ten seconds of phone and watch data from a gym cycling activity together with their Fourier transforms.}
+        \caption[Gym cycling sample]{Ten seconds of phone and watch data from a gym cycling activity together with their Fourier transforms.}
         \label{fig:2by2gymcycling}
       \end{figure}
       
@@ -259,7 +259,7 @@
       \begin{figure}[!th]
         \centering
         \includegraphics[width=0.8\textwidth]{2by2eating}
-        \caption{Ten seconds of phone and watch data from an eating activity together with their Fourier transforms.}
+        \caption[Eating sample]{Ten seconds of phone and watch data from an eating activity together with their Fourier transforms.}
         \label{fig:2by2eating}
       \end{figure}
       
@@ -271,7 +271,7 @@
       \begin{figure}[!th]
         \centering
         \includegraphics[width=0.8\textwidth]{2by2fussball}
-        \caption{Ten seconds of phone and watch data from a fussball activity together with their Fourier transforms.}
+        \caption[Fussball sample]{Ten seconds of phone and watch data from a fussball activity together with their Fourier transforms.}
         \label{fig:2by2fussball}
       \end{figure}
       
@@ -283,7 +283,7 @@
       \begin{figure}[!th]
         \centering
         \includegraphics[width=0.8\textwidth]{2by2gallery}
-        \caption{Ten seconds of phone and watch data from a gallery perusal activity together with their Fourier transforms.}
+        \caption[Gallery perusal sample]{Ten seconds of phone and watch data from a gallery perusal activity together with their Fourier transforms.}
         \label{fig:2by2gallery}
       \end{figure}
       
@@ -295,7 +295,7 @@
       \begin{figure}[!th]
         \centering
         \includegraphics[width=0.8\textwidth]{2by2running}
-        \caption{Ten seconds of phone and watch data from a running activity together with their Fourier transforms.}
+        \caption[Running sample]{Ten seconds of phone and watch data from a running activity together with their Fourier transforms.}
         \label{fig:2by2running}
       \end{figure}
       
@@ -308,7 +308,7 @@
       \begin{figure}[!th]
         \centering
         \includegraphics[width=0.8\textwidth]{2by2stairs}
-        \caption{Ten seconds of phone and watch data from a stair climbing activity together with their Fourier transforms.}
+        \caption[Stair climbing sample]{Ten seconds of phone and watch data from a stair climbing activity together with their Fourier transforms.}
         \label{fig:2by2stairs}
       \end{figure}
       Stairs were climbed in the computer lab. A single recording contains climbing and descending stairs. Stairs were climbed either one at a time or two at a time, with the hand either loose or holding the handrail.
@@ -321,7 +321,7 @@
       \begin{figure}[!th]
         \centering
         \includegraphics[width=0.8\textwidth]{2by2standing}
-        \caption{Ten seconds of phone and watch data from a standing activity together with their Fourier transforms.}
+        \caption[Standing sample]{Ten seconds of phone and watch data from a standing activity together with their Fourier transforms.}
         \label{fig:2by2standing}
       \end{figure}
       Standing as an activity exists to test differentiation between other upright activities such as toothbrushing and fussball. The phone is largely stationary while the watch moves between certain key standing positions (e.g. arm hanging, in pocket, on hip etc.). 
@@ -332,7 +332,7 @@
       \begin{figure}[!th]
         \centering
         \includegraphics[width=0.8\textwidth]{2by2teethbrushing}
-        \caption{Ten seconds of phone and watch data from a toothbrushing activity together with their Fourier transforms.}
+        \caption[Teethbrushing sample]{Ten seconds of phone and watch data from a toothbrushing activity together with their Fourier transforms.}
         \label{fig:2by2teethbrushing}
       \end{figure}
       
@@ -346,7 +346,7 @@
       \begin{figure}[!th]
         \centering
         \includegraphics[width=0.8\textwidth]{2by2walking}
-        \caption{Ten seconds of phone and watch data from a walking activity together with their Fourier transforms.}
+        \caption[Walking sample]{Ten seconds of phone and watch data from a walking activity together with their Fourier transforms.}
         \label{fig:2by2walking}
       \end{figure}
       
@@ -395,7 +395,7 @@
         \begin{figure}
           \centering
           \includegraphics[width=1.0\textwidth]{butterworth_filters}
-          \caption{Frequency response for Butterworth filters of different orders. The higher the order, the quicker the cutoff between the pass band and the stop band. Each has a critical frequency of 5~\si{Hz}. At the critical frequency, the frequency response is equal to $\frac{1}{\sqrt{2}}$. A fifth-order Butterworth filter was used to filter the noise from the accelerometer data. }
+          \caption[Frequency response for Butterworth filters of different orders]{Frequency response for Butterworth filters of different orders. The higher the order, the quicker the cutoff between the pass band and the stop band. Each has a critical frequency of 5~\si{Hz}. At the critical frequency, the frequency response is equal to $\frac{1}{\sqrt{2}}$. A fifth-order Butterworth filter was used to filter the noise from the accelerometer data. }
           \label{fig:butterworth_filters}
         \end{figure}
         
@@ -433,12 +433,12 @@
       \subsubsection{Mean of each axis and magnitude}
         The arithmetic mean $\bar{X}$ defined as $$\bar{X} = \frac{1}{n}\sum\limits_{i = 1}^{n}x_i$$ was calculated for each of the x, y and z axes and also for the magnitude.
         
-        The arithmetic mean does not encode a lot of data, but is useful for determining primary orientation during the activity. For example, computer use has a z mean which is close to gravitational accleration while the others are near zero. This indicates the devices primarily points upward during this activity.
+        The arithmetic mean does not encode a lot of data, but is useful for determining primary orientation during the activity. For example, computer use has a z mean which is close to gravitational acceleration while the others are near zero. This indicates the devices primarily points upward during this activity.
       
       \subsubsection{Standard deviation of each axis and magnitude}
         The standard deviation $\sigma$ defined as $$\sigma = \sqrt{\frac{1}{n}\sum\limits_{i = 1}^{n}(\bar{x}-x_i)^2}$$ was calculated for each of the x, y and z axes and also for the magnitude.
         
-        The standard deviation gives a measure of how much variation is present in each of the axes, and hence is useful when trying to recognise those activities that consistently have little variation in a particular measure. Gym cycling is one such activity, where the wrist moves comparitively little.
+        The standard deviation gives a measure of how much variation is present in each of the axes, and hence is useful when trying to recognise those activities that consistently have little variation in a particular measure. Gym cycling is one such activity, where the wrist moves comparatively little.
       \subsubsection{Maximum amplitude of each axis and magnitude}
         The maximum $x_{\max}$ defined as $$x_{\max} = \max_i x_i $$
         
@@ -477,13 +477,13 @@
         This feature is used successfully in Hemminki \emph{et al.}\cite{hemminki2013accelerometer} as a measure of how much information is present in its power spectrum.
         
       \subsubsection{Frequency of maximum amplitude in the power spectrum of the magnitude}
-        The power spectrum of the magnitude shows the disribution of power in the frequencies of a signal. It is defined as the squared magnitude of the Fourier transform of the signal.
+        The power spectrum of the magnitude shows the distribution of power in the frequencies of a signal. It is defined as the squared magnitude of the Fourier transform of the signal.
         
         Rather than take the Fourier transform of the original signal, the mean of the signal is first subtracted. If the original signal oscillates about some non-zero offset, the Fourier transform will have a spike at the origin (0 \si{Hz}, or the DC component). To avoid incorrectly classing 0 \si{Hz} as the maximum, the mean is subtracted from the original signal. The frequency of maximum amplitude of a power spectrum $X$ is then:
         
         $$\mathrm{f}_\mathrm{max} = \argmax_f X_f$$
         
-        The frequency of maximum amplitude gives the principle frequency of the accelerometer data. For example, able-bodied people take between one and two steps in a second, and so we should expect a freqeuncy of maximum amplitude in the $1 \sim 2 \si{Hz}$ range. Indeed, this is empirically what we see.
+        The frequency of maximum amplitude gives the principle frequency of the accelerometer data. For example, able-bodied people take between one and two steps in a second, and so we should expect a frequency of maximum amplitude in the $1 \sim 2 \si{Hz}$ range. Indeed, this is empirically what we see.
         
         A summary of the extracted features is given in Table~\ref{tab:extracted-features}.
     \subsection{Machine learning}
@@ -493,7 +493,7 @@
         \item a multiset of labels $y$ where $y_i \in \left\{1, 2, \dots, K\right\}$ is the label for instance $X_i$;
       \end{itemize}  
       
-      This set of labelled instances is refered to as the \emph{training set}, which a classifier uses to generate a model. The classifier is then given a set of unlabelled instances, refered to as the \emph{test set}. The true labels of the test set are stored, but remain unknown to the classifier. The classifier generates a prediction for the test set, and a comparison between the predicted labels and the true labels forms the basis of any evaluative technique.
+      This set of labelled instances is referred to as the \emph{training set}, which a classifier uses to generate a model. The classifier is then given a set of unlabelled instances, referred to as the \emph{test set}. The true labels of the test set are stored, but remain unknown to the classifier. The classifier generates a prediction for the test set, and a comparison between the predicted labels and the true labels forms the basis of any evaluative technique.
       
       I used four different classifiers:
       \begin{enumerate}
@@ -505,8 +505,8 @@
       
       I used implementations of these classifiers from Scikit Learn, though I explain the mechanisms below.
       
-      \subsubsection{Proprotionally stratified random classifier}
-        The protionally stratified random classifier acts as a dummy classifier. It randomly assigns labels to instances based on the proportion of the labels in the training set. This classifier is used to establish a baseline for evaluation.
+      \subsubsection{Proportionally stratified random classifier}
+        The proportionally stratified random classifier acts as a dummy classifier. It randomly assigns labels to instances based on the proportion of the labels in the training set. This classifier is used to establish a baseline for evaluation.
         
         Thus, this classifier completely ignores all feature information. Given the training set, the classifier generates, for each $k \in \left\{1, 2, \dots, K\right\}$  a count $c_k$ of the number of times label $k$ appears in the set of labels $y$ i.e. the number of instances that are labelled $k$.
         
@@ -548,7 +548,7 @@
       \subsubsection{Decision Tree classifier}
         A decision tree classifier forms a tree where each node is a decision about a feature and labels appear as leaves.
         
-        The training proceedure for a decision tree classifier builds the tree recursively. For a node $m$, let $Q$ be the set of instance--label pairs in $m$. Create a possible split $\theta = (j, t)$ where $j$ is a feature and $t$ is some thereshold value. Generate two subsets $Q_\mathrm{left}$ and $Q_\mathrm{right}$, where 
+        The training procedure for a decision tree classifier builds the tree recursively. For a node $m$, let $Q$ be the set of instance--label pairs in $m$. Create a possible split $\theta = (j, t)$ where $j$ is a feature and $t$ is some threshold value. Generate two subsets $Q_\mathrm{left}$ and $Q_\mathrm{right}$, where 
         $$Q_\mathrm{left}(\theta) = \left\{ (\mathbf{X}_i,y_i) \mid x_j <= t \right \}$$
         $$Q_\mathrm{right}(\theta) = Q \setminus Q_\mathrm{left} = \left\{ (\mathbf{X}_i,y_i) \mid x_j > t \right \}$$
       
@@ -584,12 +584,19 @@
       
         The Scikit-Learn implementation of decision tree classifiers uses an optimised version of the CART (Classification and Regression Trees), developed by Breiman \emph{et al.}\cite{breiman1984classification}.
         
-        A single CART model is easy to intrepret, as it can be illustrated as a set of binary decisions. An actual decision tree created by a Decision Tree classifier trained on my data set can be seen in Figure~\ref{fig:decision-tree} NOTE: this image isn't included because it won't fit onto one page. Perhaps I should just show a portion of it?
+        A single CART model is easy to interpret, as it can be illustrated as a set of binary decisions. An extract of a decision tree classifier trained on phone and watch data can be seen in Figure~\ref{fig:decision-tree}.
+        
+        \begin{figure}
+          \centering
+          \includegraphics[width=1.0\textwidth]{bothtree}
+          \caption[An extract of a decision tree classifier]{An extract of a decision tree trained on phone and watch data. Only two decisions are required to distinguish all walking samples in the training set.}
+          \label{fig:decision-tree}
+        \end{figure}
         
         The settings I used for the configuration of the decision tree -- known as hyperparameters -- I left at default settings. Optimising hyperparameters was ultimately unnecessary for accurate classification, and is dealt with partially by also using a random forest.
         
       \subsubsection{Random Forest classifier}
-        The random forest classifier is an example of an ensemble classifer, one that makes use of a set of other classifiers. The random forest classifier that trains a collection of decision tree classifiers. Each decision tree classifier finds the best split from a random subset of features, rather than the absolute best split. The outputs from all the decision tree classifiers are then aggregated by the random forest classifier by outputting the modal label.
+        The random forest classifier is an example of an ensemble classifier, one that makes use of a set of other classifiers. The random forest classifier that trains a collection of decision tree classifiers. Each decision tree classifier finds the best split from a random subset of features, rather than the absolute best split. The outputs from all the decision tree classifiers are then aggregated by the random forest classifier by outputting the modal label.
         
         Decision tree classifiers are prone to overfitting, especially when the are deep. The random forest classifier reduces variance by excluding different features from the training set, thus is less prone to overfitting.
         

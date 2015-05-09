@@ -1,6 +1,6 @@
 \chapter{Introduction}
   This dissertation describes the implementation and evaluation of an activity classifier using 
-  accelerometer data captured simutaneously from a smartphone and a smartwatch.  
+  accelerometer data captured simultaneously from a smartphone and a smartwatch.  
   
   The aims of the project are:
   \begin{enumerate}
@@ -35,9 +35,9 @@
     
     Though 
     activity classification is available on Android smartphones, an approach that
-    utilises simutaneous collection from a smartphone and smartwatch warrants further research. A common opinion is that smartwatches will always be more accurate activity classifiers than smartphones because they are worn on the body. The investigation of this dissertation attempts to quantify this position.
+    utilises simultaneous collection from a smartphone and smartwatch warrants further research. A common opinion is that smartwatches will always be more accurate activity classifiers than smartphones because they are worn on the body. The investigation of this dissertation attempts to quantify this position.
      
-    For that reason, this dissertation details the implemenation of accelerometer data collection using current 
+    For that reason, this dissertation details the implementation of accelerometer data collection using current 
     consumer devices (an Android smartphone and Android Wear smartwatch), classifies a user's 
     activities and compares this classification accuracy to using only smartphone data and using 
     only smartwatch data. 
@@ -66,23 +66,18 @@
     research. I highlight three papers and discuss their similarity to this problem. Summaries of
     their work are found in Table~\ref{tab:intro-relatedwork-comparison}.
     
-    Unlike many previous investigations into this topic, this project differs by:
-      \begin{enumerate}
-        \item being implemented on consumer hardware; and
-        \item using devices that are not fixed to the body (in the case of the phone).
-      \end{enumerate}
-
-    Bao \emph{et al.} \cite{bao2004activity} detect physicial activities using five biaxial accelerometers
-    worn on different parts of the body: hip, wrist, ankle, arm and thigh. They find that accuracy  
-    is not significantly reduced when using just thigh and wrist accelerometers. Futhermore,
-    recognition rates for thigh and wrist data resulted in the highest recognition accuracy among
-    all pairs of accelerometers, with over a $25\%$ improvement over the best single accelerometer
-    results. This supports the viability of this project, with the improvement of being able to use 
-    triaxial accelerometers found in consumer smartphones and smartwatches.
+    \subsection{Sensors attached to body}
+      Bao \emph{et al.} \cite{bao2004activity} detect physical activities using five biaxial accelerometers
+      worn on different parts of the body: hip, wrist, ankle, arm and thigh. They find that accuracy  
+      is not significantly reduced when using just thigh and wrist accelerometers. Furthermore,
+      recognition rates for thigh and wrist data resulted in the highest recognition accuracy among
+      all pairs of accelerometers, with over a $25\%$ improvement over the best single accelerometer
+      results. This supports the viability of this project, with the improvement of being able to use 
+      triaxial accelerometers found in consumer smartphones and smartwatches.
     
-    Long \emph{et al.} \cite{long2009single} use a single triaxial accelerometer placed on the wrist and use it to achieve an $80\%$ activity classification accuracy in five activities. However, only $50\%$ of all cycling is correctly classified. Bao \emph{et al.} achieve an accuracy of $>92\%$ by using thigh and wrist data. This would suggest that wrist data alone is not sufficient to accurately classify certain types of activity. Cycling requires periodic leg motion (pedalling) while the hands and wrists move comparably little. Many of the features of motion used in activity classification require frequency domain analysis, and so data that contains periodic motion will be easier to recognise.
+      Long \emph{et al.} \cite{long2009single} use a single triaxial accelerometer placed on the wrist and use it to achieve an $80\%$ activity classification accuracy in five activities. However, only $50\%$ of all cycling is correctly classified. Bao \emph{et al.} achieve an accuracy of $>92\%$ by using thigh and wrist data. This would suggest that wrist data alone is not sufficient to accurately classify certain types of activity. Cycling requires periodic leg motion (pedalling) while the hands and wrists move comparably little. Many of the features of motion used in activity classification require frequency domain analysis, and so data that contains periodic motion will be easier to recognise.
     
-    Atallah \emph{et al.} \cite{atallah2010sensor} focus on two important facets of accelerometer-based activity classification: sensor location and useful features. Much like Bao \emph{et al.} they use seven sensors on the chest, arm, wrist, waist, knee, ankle and ear. Of their analysed features, the averaged entropy over three axes, the mean of the pairwise cross-covariance of axes and the energy of a 0.2 Hz window around the main frequency divided by total energy are all highlighted as being highly ranked for distinguishing activities. However, this study neglects to use a decision tree classifier in its classification, recommended by both Bao \emph{et al.} and Long \emph{et al.}
+      Atallah \emph{et al.} \cite{atallah2010sensor} focus on two important facets of accelerometer-based activity classification: sensor location and useful features. Much like Bao \emph{et al.} they use seven sensors on the chest, arm, wrist, waist, knee, ankle and ear. Of their analysed features, the averaged entropy over three axes, the mean of the pairwise cross-covariance of axes and the energy of a 0.2 Hz window around the main frequency divided by total energy are all highlighted as being highly ranked for distinguishing activities. However, this study neglects to use a decision tree classifier in its classification, recommended by both Bao \emph{et al.} and Long \emph{et al.}
     \begin{table}[p]
       {\tabulinesep=1.2mm
       \begin{tabu} to \linewidth { p{2cm} X X X}
@@ -114,7 +109,7 @@
           \textbf{Classifiers}
           & Decision table, \newline nearest neighbour, \newline decision tree, \newline naive Bayes
           & Decision tree, \newline principle component analysis, \newline naive Bayes 
-          & K-nearest neighbors, \newline naive Bayes \\
+          & K-nearest neighbours, \newline naive Bayes \\
         \hline
           \textbf{Overall accuracy}
           & $84\%$ & $80\%$ & N/A \\
@@ -123,6 +118,18 @@
       \caption{Prior work on accelerometer-based activity classification}
       \label{tab:intro-relatedwork-comparison}
     \end{table}
+    \subsection{Smartphone-only activity classification}
+      Which paper(s) would you recommend here Neal?
+    \subsection{Smartwatch activity classification}
+      Smartwatch activity classification is a relatively new field because consumer smartwatches are relatively new devices. Papers at WristSense 2015\footnote{https://sites.google.com/site/wristsenseworkshop2015/program}, a conference for those working on ``wrist worn smart devices'', focus primarily on gesture detection or recognition of particular activities for applications such as diet monitoring, detecting self-harming and detection of bad habits. 
+    \subsection{Comparison to this project}
+      Unlike many previous investigations into this topic, this project differs by:
+        \begin{enumerate}
+          \item being implemented on consumer hardware;
+          \item using devices that are not fixed to the body (in the case of the phone);
+          \item attempting to classify a broad range of activities using the smartwatch.
+        \end{enumerate}
       
+      The project also differs in the activities it attempts to classify.
     
     

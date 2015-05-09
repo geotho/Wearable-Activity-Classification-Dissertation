@@ -1,7 +1,7 @@
 \chapter{Preparation}
   This chapter details the work done before the main implementation of the project was started. It
   details the devices chosen to implement this project and the reasons for choosing them. It then
-  discusses the existing libaries and APIs available for those devices and for the required data
+  discusses the existing libraries and APIs available for those devices and for the required data
   processing. The design decisions are supported by some preliminary results on sensor noise.  Finally, it describes software engineering techniques used.
 
   \section{Requirements analysis}
@@ -11,7 +11,7 @@
       \begin{enumerate}
         \item access tri-axial readings from accelerometer on both the smartwatch and the smartphone;
         \item store this accelerometer data temporarily on the internal memory of each device using suitable data structures;
-        \item transmit this data from the smartwatch to the smartphone using a suitable protocol, because of memory-contraints and to enable transfer to a;
+        \item transmit this data from the smartwatch to the smartphone using a suitable protocol, because of memory constraints and to enable transfer to a;
         \item store the data permanently on the smartphone.
       \end{enumerate}
     
@@ -39,7 +39,7 @@
       The smartphone chosen for development was the Google Nexus 5. Smartphone technology has
       advanced to the point that many Android smartphones are homogeneous with respect to this
       project --- they all contain sufficient processing power, internal memory and an 
-      accerometer capable of recording data.
+      accelerometer capable of recording data.
       
       The Nexus 5 contains a tri-axial accelerometer capable of recording measurements $\pm2\si{g}$
       on each axis, where $\si{g} \approx 9.81\si{\metre\per\square\second}$. This gives a total possible magnitude of $\sqrt{3 \times (2\mathrm{g})^2} = 2\mathrm{g}\sqrt{3} \approx 34 \si{\metre\per\square\second}$. Many other smartphones are susceptible to this limit and it is not thought that this will be an issue for classification.
@@ -50,7 +50,7 @@
       \begin{figure}[!th]
         \centering
         \includegraphics[width=0.3\textwidth]{Nexus_5_Accelerometer}
-        \caption{A Nexus 5 device, overlayed with the coordinate system used by the Android API. The positive $x$ direction is defined as towards the top of the phone, the positive $y$ direction is defined as towards the right of the phone and the positive $z$ direction comes out of the screen. These directions are all relative to the natural portrait orientation of the device; they do not change when the device is used in horiztonal orientation.}
+        \caption[A Nexus 5 device, overlaid with the coordinate system used by the Android API.]{A Nexus 5 device, overlaid with the coordinate system used by the Android API. The positive $x$ direction is defined as towards the top of the phone, the positive $y$ direction is defined as towards the right of the phone and the positive $z$ direction comes out of the screen. These directions are all relative to the natural portrait orientation of the device; they do not change when the device is used in horizontal orientation.}
         \label{fig:nexus-5-accelerometer}
       \end{figure}
       
@@ -95,11 +95,11 @@
           \hline
           
         \end{tabu}}
-        \caption{An overview of possible smartwatch devices. The Samsung Galaxy Gear Live was the device eventually chosen.}
+        \caption[An overview of possible smartwatch devices]{An overview of possible smartwatch devices. The Samsung Galaxy Gear Live was the device eventually chosen.}
         \label{tab:smartwatch-features}
       \end{table}
   
-  \section{Introduction to signal processing}
+  \section{Working with accelerometer signals}
     \label{sec:intro-sig-processing}
     The output from any accelerometer is a time-series representing its acceleration. Effectively extracting information from this time-series is central to the success of this project. Knowledge of signal processing is therefore critical.
     
@@ -121,12 +121,12 @@
       
     \subsubsection{Noise and filtering}
       The readings from the accelerometer are subject to noise, exhibited in 
-      Figure~\ref{fig:x_y_z_flat_plot}, which plots readings from the x, y, and z axes during an hour long recording with the chosen smartphone laying flat on a table.
+      Figure~\ref{fig:x_y_z_flat_plot}, which plots readings from the X, Y, and Z axes during an hour long recording with the chosen smartphone laying flat on a table.
       
       \begin{figure}
         \centering
         \includegraphics[width=1.0\textwidth]{x_y_z_flat_plot}
-        \caption{The x, y and z axis readings from an hour long accelerometer recording of the chosen smartphone laying flat on a table. The readings contain noise.}
+        \caption[Noisy readings of the X, Y and Z axes]{The X, Y and Z axis readings from an hour long accelerometer recording of the chosen smartphone laying flat on a table. The readings contain noise.}
         \label{fig:x_y_z_flat_plot}
       \end{figure}
       
@@ -136,7 +136,7 @@
       \begin{figure}
         \centering
         \includegraphics[width=1.0\textwidth]{noise_histogram}
-        \caption{Histogram of the magnitude $\|\mathbf{x}\| = \sqrt{x^2+y^2+z^2}$ from the data shown in Figure~\ref{fig:x_y_z_flat_plot}. The magnitude should measure $ \mathrm{g} \approx 9.81\si{\metre\per\square\second}$, which is marked as the black dashed line on the graph. The noise implies the accelerometer data is imprecise. The mean of the data is less than $\mathrm{g}$, which indicates the recording is also inaccurate.}
+        \caption[Histogram of the magnitude from the data shown in Figure~\ref{fig:x_y_z_flat_plot}.]{Histogram of the magnitude $\|\mathbf{x}\| = \sqrt{x^2+y^2+z^2}$ from the data shown in Figure~\ref{fig:x_y_z_flat_plot}. The magnitude should measure $ \mathrm{g} \approx 9.81\si{\metre\per\square\second}$, which is marked as the black dashed line on the graph. The noise implies the accelerometer data is imprecise. The mean of the data is less than $\mathrm{g}$, which indicates the recording is also inaccurate.}
         \label{fig:noise_histogram}
       \end{figure}
       
@@ -145,7 +145,7 @@
       \begin{figure}
         \centering
         \includegraphics[width=1.0\textwidth]{noise_prob_plot}
-        \caption{A normal probability plot of the magnitude $\|\mathbf{x}\| = \sqrt{x^2+y^2+z^2}$  from the data shown in Figure~\ref{fig:x_y_z_flat_plot}. Data that is normally distributed will form a straight line when plotted in this way. This data is very likely to be normally distributed, as indicated by the straight line. ThThe straight line of best fit exhibits a coefficient of determination, $R^2 = 0.9993$}
+        \caption[A normal probability plot of the magnitude from the data shown in Figure~\ref{fig:x_y_z_flat_plot}.]{A normal probability plot of the magnitude $\|\mathbf{x}\| = \sqrt{x^2+y^2+z^2}$  from the data shown in Figure~\ref{fig:x_y_z_flat_plot}. Data that is normally distributed will form a straight line when plotted in this way. This data is very likely to be normally distributed, as indicated by the straight line. ThThe straight line of best fit exhibits a coefficient of determination, $R^2 = 0.9993$}
         \label{fig:noise_prob_plot}
       \end{figure}
       
@@ -175,9 +175,8 @@
       
       \begin{figure}[h]
         \centering
-        \includegraphics[width=0.8\textwidth]{timestamp_histogram}
-        \caption{Histogram of the differences in successive timestamps of a one hour accelerometer 
-            recording from the Nexus 5 smartphone. 
+        \includegraphics[width=1.0\textwidth]{timestamp_histogram}
+        \caption[Histogram of the differences in successive timestamps]{Histogram of the differences in successive timestamps from the data shown in Figure~\ref{fig:x_y_z_flat_plot}. 
             The sample rate was set to 50 \si{Hz}. 0.02002s accounted for 75\% of the 
             differences.
             Thus the actual sample rate is approximately the user-suggested sample rate.}
@@ -191,6 +190,7 @@
       Table~\ref{tab:data-row} gives a graphical representation of the data returned.
       
       \begin{table}
+        \tabcolsep=0.11cm
         \centering
         \begin{tabu} to \linewidth {|X[2,c] | X[c] | X[c] | X[c] |}
           \hline
@@ -205,7 +205,7 @@
         \label{tab:data-row}
       \end{table}
       
-      Curiously, the timestamp returned as part of the data is documented only as ``The time in nanosecond [sic] at which the event happened'' \cite{androidsensoreventapi}. Futher exploration reveals that the timestamp is not defined against any particular zero-base, but rather the time since the device was powered on \cite{androidissuedocumentationbug, androidissuehardwarebug}. The implication of this for the project is that while the timestamp can be relied on for intervals between measurements, it cannot be used between different sets of recordings or across devices.
+      Curiously, the timestamp returned as part of the data is documented only as ``The time in nanosecond [sic] at which the event happened'' \cite{androidsensoreventapi}. Further exploration reveals that the timestamp is not defined against any particular zero-base, but rather the time since the device was powered on \cite{androidissuedocumentationbug, androidissuehardwarebug}. The implication of this for the project is that while the timestamp can be relied on for intervals between measurements, it cannot be used between different sets of recordings or across devices.
       
       %TODO: which are the x y z values of the device's accelerometer?
 
@@ -257,14 +257,51 @@
       The data processing and machine learning elements of the project required an Agile methodology. The goal here is less well defined --- to classify activities with the greatest accuracy --- and the implementation to achieve the goal is far more experimental.
       
     \subsection{Version control and backups}
-      I used three separate Git repositories for the data collection code\footnote{https://github.com/geotho/WearableActivityClassificationApp}, the data processing code\footnote{https://github.com/geotho/Wearable-Activity-Classifier-Machine-Learning} and the dissertation\footnote{https://github.com/geotho/Wearable-Activity-Classification-Dissertation} respectively. The Git repositiories were synced to GitHub at each commit. Version control allowed me to follow a \emph{implement--test--commit} pattern when writing code. 
+      I used three separate Git repositories for the data collection code\footnote{https://github.com/geotho/WearableActivityClassificationApp}, the data processing code\footnote{https://github.com/geotho/Wearable-Activity-Classifier-Machine-Learning} and the dissertation\footnote{https://github.com/geotho/Wearable-Activity-Classification-Dissertation} respectively. The Git repositories were synced to GitHub at each commit. Version control allowed me to follow a \emph{implement--test--commit} pattern when writing code. 
       
-      GitHub also served as one method of backup. Each GitHub repository is publicly accessible such that I can continue implementation even if my primary development computer crashed and I was also locked out of my GitHub account. In addition, I backed up periodically to Dropbox and to an external hard drive. The external hard drive backup retained old copies of files when they were updated. This gives four replications of my entire project, with two of these able to access previous versions of the code.  
+      GitHub also served as one method of backup. Each GitHub repository is publicly accessible such that I can continue implementation even if my primary development computer crashed and I was also locked out of my GitHub account. In addition, I backed up periodically to Dropbox and to an external hard drive. The external hard drive backup retained old copies of files when they were updated. This gives four replications of my entire project, with two of these able to access previous versions of the code.
+  \section{Activities for classification}
+    \label{sec:activities_for_classification}
+    Activities can vary in the amount of movement required, their typical body position and the parts of the body which are moving. When picking activities I wanted to attempt to classify, I wanted to select a mix of activities that were similar in some characteristics and that varied in others.
+    
+    The activities selected fit into three broad categories:
+    \begin{itemize}
+      \item physical activities requiring whole body motion;
+      \item activities that primarily require arm motion;
+      \item low energy upright activities.
+    \end{itemize}
+    
+    The activities that I hope to classify are as follows:
+    \begin{itemize}
+      \item Physical activities requiring whole body motion:
+      \begin{itemize}
+        \item Climbing
+        \item Cycling
+        \item Gym cycling
+        \item Running
+        \item Stair climbing
+        \item Walking
+      \end{itemize} 
+      \item Activities that primarily require arm motion:
+      \begin{itemize}
+        \item Computer use
+        \item Eating
+        \item Playing fussball
+      \end{itemize}
+      \item Low energy upright activities:
+      \begin{itemize}
+        \item Gallery perusal
+        \item Standing
+        \item Teeth brushing
+      \end{itemize}
+    \end{itemize}
+    
   \section{Summary}
     In this section I presented:
     \begin{itemize}
       \item an overview of digital signal processing;
       \item information on the smartphone and smartwatch used;
       \item details of key APIs used including the Android Sensor API and the Android Wear Data API;
-      \item development tools and software engineering techniques.
+      \item development tools and software engineering techniques;
+      \item activities I seek to classify.
     \end{itemize}
