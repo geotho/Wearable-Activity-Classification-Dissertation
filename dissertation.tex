@@ -1,7 +1,7 @@
 % Template for a Computer Science Tripos Part II project dissertation
 \documentclass[12pt,a4paper,twoside,openright]{report}
 \usepackage[pdfborder={0 0 0}]{hyperref}    % turns references into hyperlinks
-\usepackage{geometry}  % adjusts page layout
+\usepackage[a4paper]{geometry}  % adjusts page layout
 \usepackage{graphicx}  % allows inclusion of PDF, PNG and JPG images
 \usepackage{verbatim}
 \usepackage{docmute}   % only needed to allow inclusion of proposal.tex
@@ -16,6 +16,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{tikz}
+\usepackage{url}
 \usepackage[section]{placeins}
 \usepackage[font={small,it}]{caption}
 \usepackage{pdfpages}
@@ -46,39 +47,44 @@
 
 \pagestyle{empty}
 
-\rightline{\LARGE \textbf{George Thomas}}
+\rightline{\Large \textbf{George Thomas}}
 
-\vspace*{60mm}
+\vspace*{35mm}
 \begin{center}
-\Huge
+\includegraphics[width=0.6\textwidth]{coverimage}
+\\
+\Large
 \textbf{Activity classification using wearable devices} \\[5mm]
+\large
 Computer Science Tripos -- Part II \\[5mm]
 Peterhouse \\[5mm]
-\today  % today's date
+June 2015
 \end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Proforma, table of contents and list of figures
-
-\pagestyle{plain}
-
+% \pagestyle{plain}
+\newpage
+\par\vspace*{\fill}
+\textbf{Cover:} cycling, as seen by a smartphone's triaxial accelerometer.
+\clearpage
+\newgeometry{top=1cm}
 \chapter*{Proforma}
 
-{\large
+{
 \begin{tabular}{ll}
 Name:               & \bf George Thomas                       \\
 College:            & \bf Peterhouse                     \\
 Project Title:      & \bf Activity classification using wearable devices \\
-Examination:        & \bf Computer Science Tripos -- Part II, July 2015  \\
-Word Count:         & \bf 11342 \\
+Examination:        & \bf Computer Science Tripos -- Part II, June 2015  \\
+Word Count:         & \bf 11926 \\
 Project Originator: & Dr. Neal Lathia                    \\
 Supervisor:         & Dr. Neal Lathia                    \\
 \end{tabular}
 }
 \stepcounter{footnote}
 
-
-\section*{Original Aims of the Project}
+\section*{Original aims of the project}
 
   The aims of the project are:
   \begin{enumerate}
@@ -86,15 +92,17 @@ Supervisor:         & Dr. Neal Lathia                    \\
     \item evaluate to what extent the smartwatch is better at helping to classify activities.
   \end{enumerate}
 
-\section*{Work Completed}
+\section*{Work completed}
 
-  I have built an Android smartphone app and an Android Wear smartwatch app that allows a user to collect accelerometer data from both devices simultaneously. I collect over five hours of accelerometer data over a range of activities. I extracted features from time divisions of the data and used a set of classifiers to classify the activities. I evaluate the performance of each classifier on the set of activities when given access to only the watch data, only the phone data and both the watch and phone data together.
+  I have built an Android smartphone app and an Android Wear smartwatch app that allows a user to collect accelerometer data from both devices simultaneously. I collected over five hours of accelerometer data over a range of activities. I extracted features from time divisions of the data and used a set of classifiers to classify the activities. I evaluated the performance of each classifier on the set of activities when given access to only the watch data, only the phone data and both the watch and phone data together.
 
-\section*{Special Difficulties}
+\section*{Special difficulties}
 
 None
 
+\restoregeometry
 \newpage
+
 \section*{Declaration}
 
 I, George Thomas of Peterhouse, being a candidate for Part II of the Computer
@@ -113,6 +121,8 @@ extent for a comparable purpose.
 \tableofcontents
 
 \listoffigures
+
+\listoftables
 
 \newpage
 \section*{Acknowledgements}
@@ -139,6 +149,8 @@ Many thanks to Dr. Neal Lathia for his help and advice, and also to Prof. Cecili
 % the bibliography
 \addcontentsline{toc}{chapter}{Bibliography}
 \printbibliography
+
+\newpage
 
 \pagestyle{empty}
 \vspace*{60mm}

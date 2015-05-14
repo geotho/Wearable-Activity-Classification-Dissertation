@@ -1,23 +1,21 @@
 \chapter{Introduction}
   This dissertation describes the implementation and evaluation of an activity classifier using 
-  accelerometer data captured simultaneously from a smartphone and a smartwatch.  
-  
-  The aims of the project are:
-  \begin{enumerate}
-    \item to classify activities based on accelerometer recordings from a consumer smartwatch and smartphone; and
-    \item evaluate to what extent the smartwatch is better at helping to classify activities.
-  \end{enumerate}
+  accelerometer data captured simultaneously from a smartphone and a smartwatch.
   
   This project is motivated by the unparalleled sensing ability of recently released commodity 
-  smartwatches like the Apple Watch and similar devices. No other device is carried at all times or is worn in exactly the same place against the skin.
+  smartwatches like the Apple Watch and similar devices. No other device is carried at all times or is worn in exactly the same place against the skin.  
   
-  The classifier using data from both sources outperforms a classifier using only smartphone data,
-  and the classifier that uses only smartphone data outperforms a classifier using only smartwatch 
-  data.
+  The aims of the project are therefore:
+  \begin{enumerate}
+    \item to classify activities based on accelerometer recordings from a consumer smartwatch and smartphone; and
+    \item to evaluate to what extent the smartwatch is better at helping to classify activities.
+  \end{enumerate}
+  
+  I find that the classifier using data from both sources outperforms a classifier using only smartphone data. Contrary to popular opinion, I find no evidence to suggest the smartwatch is any better at classifying activities than a smartphone when used individually.
   \section{Motivation}
   \label{sec:intro-motivation}
     Wearable devices are set to become the next big technology trend. Wrist-worn wearables, 
-    including smartwatches, formed the majority of the 21m wearable devices sold year. Analysts
+    including smartwatches, formed the majority of the 21m wearable devices sold last year. Analysts
     predict the Apple Watch will sell between 20m and 40m in its first nine months 
     \cite{econapplewatch}. Estimates suggest close to 1m were sold on its first day of release
     \cite{slice2015applewatch}.
@@ -27,15 +25,13 @@
     consumers, who purchase specialised wearables to measure activity, sleep patterns and 
     calorific intake. The data's research potential is also laudable --- Apple's ResearchKit will
     allow medical researchers to access data about their patients with greater ease than ever
-    before \cite{appleresearchkit}.
+    before \cite{appleresearchkit, digitalhealth}.
     
-    Accelerometer data on its own does not reveal much about the user. In order to report on  
-    fitness or monitor health, determining a user's activities is typically required. Accurate activity classification therefore has many academic and commercial applications. To be
-    marketable, activity classification solutions must use current consumer devices.
+    Raw accelerometer data does not reveal much about the user. In order to provide fitness reports or to monitor health, it is necessary to classify what activities a user was performing. Accurate activity classification therefore has many academic and commercial applications. Activity classification solutions must use current consumer devices to achieve mainstream popularity. 
     
     Though 
-    activity classification is available on Android smartphones, an approach that
-    utilises simultaneous collection from a smartphone and smartwatch warrants further research. A common opinion is that smartwatches will always be more accurate activity classifiers than smartphones because they are worn on the body. The investigation of this dissertation attempts to quantify this position.
+    activity classification is available on Android smartphones~\cite{androidActivityRecognitionApi}, an approach that
+    utilises simultaneous collection from a smartphone and smartwatch warrants further research. A common opinion is that smartwatches will always be more accurate activity classifiers than smartphones because they are worn on the body. The investigation in this dissertation attempts to quantify this position.
      
     For that reason, this dissertation details the implementation of accelerometer data collection using current 
     consumer devices (an Android smartphone and Android Wear smartwatch), classifies a user's 
@@ -47,7 +43,7 @@
     This project requires knowledge of a variety of disparate areas in computer science. 
     
     Writing software for mobile devices requires knowledge of their paradigms and nuances.
-    Mobile devices are also subject to computational power and battery life constraints\cite{rachuri2011sociablesense} and   
+    Mobile devices are also subject to computational power and battery life constraints \cite{rachuri2011sociablesense} and   
     particular care must be taken to build a solution that works in practice.  
     A project that utilises built-in sensors also requires an understanding of the features and 
     limitations of those sensors and good knowledge of the APIs that are provided to access them.
@@ -58,15 +54,16 @@
     consideration: many methods and tools were designed for computers with persistent communication connections and unlimited power consumption.
     
     The data processing aspects of the project will require an understanding of digital signal 
-    processing, Fourier methods, data mining and machine learning, and statistics.
+    processing, Fourier methods, data mining, machine learning, and statistics.
 
   \section{Related Work}
   \label{sec:intro-relatedwork}
-    Activity classification using accelerometer data from body-mounted devices is an active area of
-    research. I highlight three papers and discuss their similarity to this problem. Summaries of
-    their work are found in Table~\ref{tab:intro-relatedwork-comparison}.
+    Activity classification using accelerometer data from devices is an active area of
+    research. I investigated research that uses sensors attached to the body, research that only uses smartphone data and research that only uses smartwatch data.
     
     \subsection{Sensors attached to body}
+      These three papers attach accelerometers directly to the body. The accelerometers used are specialist biomedical research accelerometers rather than consumer hardware. Summaries of their work are found in Table~\ref{tab:intro-relatedwork-comparison}. 
+      
       Bao \emph{et al.} \cite{bao2004activity} detect physical activities using five biaxial accelerometers
       worn on different parts of the body: hip, wrist, ankle, arm and thigh. They find that accuracy  
       is not significantly reduced when using just thigh and wrist accelerometers. Furthermore,
@@ -119,17 +116,22 @@
       \label{tab:intro-relatedwork-comparison}
     \end{table}
     \subsection{Smartphone-only activity classification}
-      Which paper(s) would you recommend here Neal?
-    \subsection{Smartwatch activity classification}
-      Smartwatch activity classification is a relatively new field because consumer smartwatches are relatively new devices. Papers at WristSense 2015\footnote{https://sites.google.com/site/wristsenseworkshop2015/program}, a conference for those working on ``wrist worn smart devices'', focus primarily on gesture detection or recognition of particular activities for applications such as diet monitoring, detecting self-harming and detection of bad habits. 
+      Both these studies use consumer smartphones to classify activities. 
+      
+      Mitchell \emph{et al.} attempt to classify sporting activities (football, field-hockey) using a smartphone mounted to a user's back~\cite{mitchell2013classification}. They achieve a best $\mathrm{F}_1$ measure --- a measure of accuracy --- of 88.8\%. They use a Discrete Wavelet Transform decomposition to extract features at various scales. Despite the high accuracy on a challenging dataset, the requirement that the smartphone be worn in a vest on the back makes this approach unconvincing to consumers.
+      
+      Siirtola \emph{et al.} classifies five everyday activities (walking, cycling, running, idling and driving/riding in a car) using a smartphone~\cite{siirtola2012recognizing}. This work keeps the phone position fixed in the front trouser pocket. They achieve accuracies of over 90\%. The assumption that the recording device is kept in the same position for all recordings is revisited in the section on data collection later in this report in Section~\ref{sec:activity-details}.
+    \subsection{Smartwatch-only activity classification}
+      Smartwatch activity classification is a relatively new field because consumer smartwatches are relatively new devices. Papers at WristSense 2015\footnote{https://sites.google.com/site/wristsenseworkshop2015/program}, a conference for those working on ``wrist worn smart devices'', focus primarily on gesture detection or recognition of particular activities for applications such as diet monitoring, detecting self-harming and detection of bad habits like smoking.
+      
+      A common trend in this area is to recognise quite specific, particular motions or gestures, rather than to attempt classification of multiple activities using smartwatches.
     \subsection{Comparison to this project}
       Unlike many previous investigations into this topic, this project differs by:
         \begin{enumerate}
+          \item making smartwatch only and combined smartwatch and smartphone classifications;
           \item being implemented on consumer hardware;
           \item using devices that are not fixed to the body (in the case of the phone);
-          \item attempting to classify a broad range of activities using the smartwatch.
+          \item classifying different activities.
         \end{enumerate}
-      
-      The project also differs in the activities it attempts to classify.
     
     

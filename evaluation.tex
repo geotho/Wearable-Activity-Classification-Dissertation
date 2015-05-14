@@ -3,6 +3,8 @@
     Table~\ref{tab:data-collected} details the amount of evaluation data collected.
     
     The data was collected with the smartwatch worn on the left wrist and the phone loose in the right hand trouser pocket.
+    
+    In total I collect over five hours of activity recordings over 12 different activities. This produces a total of 1816 instances to classify in the dataset.
     % Statistics about data gathered: how many records, total length etc.
     \begin{table}
       \centering
@@ -26,7 +28,7 @@
     Two primary methods of evaluation are used in this project: $\mathrm{F}_1$ measure and the confusion matrix.
     This section details these methods of evaluation. These metrics are discussed in Sokolova \emph{et al.}\cite{sokolova2009systematic}
     \subsection{F1 measure}
-      In order to define the $\mathrm{F}_1$ measure, it is necessary to first define precision and recall. In a 
+      In order to define the $\mathrm{F}_1$ measure, it is necessary to first define precision and recall.
       \begin{description}
         \item[Precision], defined as $\frac{\text{True positives}}{\text{True positives} + \text{False positives}}$, is the proportion of instances of a particular label in which the classifier's labels agree with the true labels.
         \item[Recall], defined as $\frac{\text{True positives}}{\text{True positives} + \text{False negatives}}$, is the proportion of all the instances with a particular label which are labelled as such. 
@@ -36,7 +38,7 @@
       
       $$\mathrm{F}_1 = 2 \cdot \frac{\mathrm{precision} \cdot \mathrm{recall}}{\mathrm{precision} + \mathrm{recall}}$$
       
-      We use the $\mathrm{F}_1$ measure rather than precision or recall in isolation because neither provides sufficient information. It is trivial to maximise recall in isolation: simply label everything. A precision of $1$ indicates everything we have returned is correct, but does not take into account how many instances we have missed.
+      We use the $\mathrm{F}_1$ measure rather than precision or recall in isolation because neither provides sufficient information. It is trivial to maximise recall in isolation: label everything with the class in question. A precision of $1$ indicates everything we have returned is correct, but does not take into account how many instances we have missed.
       
       As opposed to accuracy --- the proportion of instances that were correctly classified --- the $\mathrm{F}_1$ measure is more informative when the instances are rare compared to the size of the dataset. Consider a binary classification problem with two labels: $\chi$ and $\bar{\chi}$. If $\chi$ occurs just 1\% of the time, a classifier that always returns $\bar{\chi}$ will by 99\% accurate. However, its  $\mathrm{F}_1$ measure for the $\chi$ class will be 0. Because no class makes up more than 20\% of the dataset (see Table~\ref{tab:data-collected}), $\mathrm{F}_1$ is a better evaluation measure in this case.
     
@@ -50,13 +52,13 @@
         \item the decision tree classifier and random forest classifier are nondeterministic in their operation.
       \end{enumerate}
       
-      Because of this nondeterminism, multiple trials with different splits are conducted. Because multiple $\mathrm{F}_1$ measures are calculated through these independent splits, the mean of the $\mathrm{F}_1$ measure is given together with its standard error. The standard error is given by:
+      The ten splits will therefore produce different, independent $\mathrm{F}_1$ measures. The mean of the $\mathrm{F}_1$ measures is given together with its standard error. The standard error is given by:
       $$\mathrm{SE}_{\mathrm{F}_1} = \frac{\sigma}{\sqrt{n}}$$
       
-      where $\sigma$ is the standard deviation of all measurements of the $\mathrm{F}_1$ measure and $n$ is the number of trials. Ten trials were used in this project.
+      where $\sigma$ is the standard deviation of all measurements of the $\mathrm{F}_1$ measure and $n$ is the number of trials, in this case ten.
         
     \subsection {Confusion matrix}
-      A confusion matrix lists the true labels as rows and the classified labels as columns. Any given cell $c_{ij}$ is a count of the number of instances with a true label of $i$ that were classified as label $j$. Confusion matrices display all classification s and misclassifications.
+      A confusion matrix lists the true labels as rows and the classified labels as columns. Any given cell $c_{ij}$ is a count of the number of instances with a true label of $i$ that were classified as label $j$. Confusion matrices display all classifications and misclassifications.
       
       The confusion matrices presented in this project are the additions of confusion matrices from separate trials.
     % F1 measure: define precision and recall first
@@ -67,35 +69,36 @@
     The following results have been obtained by training each of the four classifiers on features extracted only from phone-collected accelerometer data.
     
     Figure~\ref{fig:F1GraphForEachClassifier_phone} gives the $\mathrm{F}_1$ measures for each activity resulting from classification using each of the four classifiers. The random forest classifier performs best of the four classifiers, outperforming others in 75\% of activities. All three proper classifiers significantly outperform the baseline dummy random classifier.
-
-    \begin{figure}[htb]
-      \centering
-      \includegraphics[width=1.0\textwidth]{F1GraphForEachClassifier_phone}
-      \caption[$\mathrm{F}_1$ measures for each activity for each of the four classifiers trained on phone-only features.]{$\mathrm{F}_1$ measures for each activity for each of the four classifiers trained on phone-only features. Best is 1, worst is 0.}
-      \label{fig:F1GraphForEachClassifier_phone}
-    \end{figure}
     
     Figure~\ref{fig:F1GraphAverage_phone} averages the $\mathrm{F}_1$ measures given in Figure~\ref{fig:F1GraphForEachClassifier_phone}. The random forest classifier outperforms the other three classifiers in average $\mathrm{F}_1$ measure. The decision tree and naive Bayes classifiers perform at the same level. Again, all three score significantly higher than the baseline dummy random classifier.
-    
-    \begin{figure}[htb]
-      \centering
-      \includegraphics[width=1.0\textwidth]{F1GraphAverage_phone}
-      \caption[Average $\mathrm{F}_1$ measures across all activities for each of the four classifiers trained on phone-only features.]{Average $\mathrm{F}_1$ measures across all activities for each of the four classifiers trained on phone-only features. Error bars are calculated as the standard error in the mean.}
-      \label{fig:F1GraphAverage_phone} 
-    \end{figure}
     
     Table~\ref{tab:ConfusionMatrix_phone_RandomForestClassifier} presents a cumulative confusion matrix for the random forest classifier trained on phone-only features. The random forest classifier was chosen as the best performing classifier. The matrix is the addition of indvidiual confusion matrices from ten independent trials.
     
     From the confusion matrix, we see some of the misclassifications we would expect from phone-only classification:
     \begin{itemize}
       \item Computer use misclassified as eating, and vice versa. Both these activities are the only seated activities and the phone should struggle to differentiate between them.
-      \item Gym cycling misclassified as cycling. Both of these activities exhibit the same pedaling motion in the leg, which phone data alone may struggle to differentiate.
+      \item Gym cycling misclassified as cycling. Both of these activities exhibit the same peddling motion in the leg, which phone data alone may struggle to differentiate.
       \item Many standing activities have been misclassified as each other, such as fussball, teethbrushing, standing and gallery perusal. Again, the phone data struggles to differentiate these static upright activities from each other.
     \end{itemize}  
     Note that the classifier has almost perfect precision on those activities that require highly periodic leg movements: gym cycling, running and walking. All (bar one) of the instances classified as those activities were correct.
-    
 
-    \begin{table}[htb]
+
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=1.0\textwidth]{F1GraphForEachClassifier_phone}
+      \caption[$\mathrm{F}_1$ measures for each activity for each of the four classifiers trained on phone-only features.]{$\mathrm{F}_1$ measures for each activity for each of the four classifiers trained on phone-only features. Best is 1, worst is 0.}
+      \label{fig:F1GraphForEachClassifier_phone}
+    \end{figure}
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=1.0\textwidth]{F1GraphAverage_phone}
+      \caption[Average $\mathrm{F}_1$ measures across all activities for each of the four classifiers trained on phone-only features.]{Average $\mathrm{F}_1$ measures across all activities for each of the four classifiers trained on phone-only features. Error bars are calculated as the standard error in the mean.}
+      \label{fig:F1GraphAverage_phone} 
+    \end{figure}
+
+    \begin{table}
       \tabcolsep=0.11cm
       \centering
         \input{data/ConfusionMatrix_phone_RandomForestClassifier}
@@ -110,7 +113,7 @@
     
     Figure~\ref{fig:F1GraphAverage_wear} averages the $\mathrm{F}_1$ measures given in Figure~\ref{fig:F1GraphForEachClassifier_wear}. The random forest classifier outperforms the other three classifiers in average $\mathrm{F}_1$ measure. The decision tree performs marginally better than the naive Bayes classifier. Again, all three score significantly higher than the baseline dummy random classifier.
     
-    Table~\ref{ConfusionMatrix_wear_RandomForestClassifier} presents a cumulative confusion matrix for the random forest classifier trained on watch-only features. Again, the random forest classifier was chosen as the best performing classifier. The matrix is the addition of indvidiual confusion matrices from ten independent trials.
+    Table~\ref{tab:ConfusionMatrix_wear_RandomForestClassifier} presents a cumulative confusion matrix for the random forest classifier trained on watch-only features. Again, the random forest classifier was chosen as the best performing classifier. The matrix is the addition of individual confusion matrices from ten independent trials.
     
     Compared to phone-only classification, the watch-only classifications exhibit less precision in those leg-period activities, such as running and walking. However, some periodicity is still present in the wrist movement and these activities are still classified accurately. A more interesting case is that of gym cycling, which is highly periodic in the leg movement but completely aperiodic in its wrist movement. As a result, its misclassification rate suffers.
     
@@ -150,7 +153,7 @@
     
     Table~\ref{tab:ConfusionMatrix_both_RandomForestClassifier} presents a cumulative confusion matrix for the random forest classifier trained on both phone and watch features. Again, the random forest classifier was chosen as the best performing classifier.
     
-    Using both phone and watch features reduces the effect of the broad categories of uncertainty that were present in phone-only and watch-only classification, though in many cases the difference is negligible. The only activity in which using phone and watch features together significantly outperforms either phone or watch classification on its own is in the climbing activitiy.
+    Using both phone and watch features reduces the effect of the broad categories of uncertainty that were present in phone-only and watch-only classification, though in many cases the difference is negligible. The only activity in which using phone and watch features together significantly outperforms either phone or watch classification on its own is in the climbing activity.
     
     \begin{figure}
       \centering
@@ -183,11 +186,11 @@
   
     Figure~\ref{fig:F1Graph_average_f1_per_featureset} averages {$\mathrm{F}_1$ measures across all activities grouped by classifier and feature set. In all three of the classifiers, the phone and watch outperform phone-only features and watch-only features. On average, the phone-only and the watch-only features perform equally well.
     
-    A particularly interesting result is that phone-only classification performs best in computer use and eating classification; introducing features extracted from watch data actually reduces the accuracy of the classifier. It is paradoxical that adding more data would make classification less accurate, especially as most of the information to be gained from computer use and eating activities should come from the watch rather than the phone.
+    A particularly interesting result is that phone-only classification performs best in computer use and eating classification; introducing features extracted from watch data actually reduces the accuracy of the classifier. One might expect most of the information to be gained from computer use and eating activities should come from the watch rather than the phone. One reason for this is that the smartwatch data could be noisy: one could argue that movements not necessarily related to the activity are more likely to be recorded on a smartwatch than on a smartphone.
     
-    One possible reason for this misclassification is the lack of other seated activities. Computer use and eating are the only two seated activities. Contrast this to semi-stationary standing activities such as fussball, standing, gallery perusal or teethbrushing. Watch-only classification consistently outperforms phone-only classification in these activities, while phone-only classification scores lower in each case than it does for computer use or for eating. I'd argue that one's ability to classify a certain activity depends very much on the other activities present in the dataset and how fine the nuances are between them. 
+    Another possible reason for this misclassification is the lack of other seated activities. Computer use and eating are the only two seated activities. Contrast this to semi-stationary standing activities such as fussball, standing, gallery perusal or teethbrushing. Watch-only classification consistently outperforms phone-only classification in these activities, while phone-only classification scores lower in each case than it does for computer use or for eating. The ability to classify a certain activity depends very much on the other activities present in the dataset and how fine the nuances are between them. 
     
-        The second of the two overall aims of the project was to evaluate to what extent the smartwatch is better at helping to classify activities. Both figures here show the the smartwatch is just as good as the smartphone, outperforming just the smartwatch in some activities and performing marginally better on average, though it is not statistically significant. Using both phone and watch features outperforms both on average and on a per-device level.
+        The second of the two overall aims of the project was to evaluate to what extent the smartwatch is better at helping to classify activities. Both figures here show the the smartwatch is just as good as the smartphone. Though it outperforms the smartphone in some activities and performs marginally better on average, it is not statistically significant. Using both phone and watch features outperforms both on average and on a per-activity level.
     \begin{figure}
       \centering
       \includegraphics[width=1.0\textwidth]{F1Graph_RandomForestClassifier}
@@ -232,7 +235,7 @@
     \begin{figure}
       \centering
       \includegraphics[width=1.0\textwidth]{FeatureImportancesCumulative}
-      \caption[Cumulative feature importances for each activity]{Cumulative feature importances for each activity. A random forest classifier was trained with one vs. rest labels and both phone and watch features. The importances of all the phone features and of all the watch features were totaled separately. The average total watch feature importance, $\approx 0.42$ is marked as the dotted line on the graph.}
+      \caption[Cumulative feature importances for each activity]{Cumulative feature importances for each activity. A random forest classifier was trained with one vs. rest labels and both phone and watch features. The importances of all the phone features and of all the watch features were totalled separately. The average total watch feature importance, $\approx 0.42$ is marked as the dotted line on the graph.}
       \label{fig:FeatureImportancesCumulative}
     \end{figure}
   \section{Relation to original goals}
@@ -242,12 +245,19 @@
       \item evaluate to what extent the smartwatch is better at helping to classify activities.
     \end{enumerate}
     
-    The confusion matrices presented in each of the three sections show correct classification of between 80\% and 90\% of activities, which is between 60\% and 70\% better than a random baseline. Evaluation using $\mathrm{F}_1$ measures show similar improvement.
+    The confusion matrices presented meet goal one. In each of the three sections, they show correct classification of between 80\% and 90\% of activities, which is between 60\% and 70\% better than a random baseline. Evaluation using $\mathrm{F}_1$ measures show similar improvement.
     
-    The data does not show the smartwatch to be better at classifying activities on average than the smartphone. However, using data from both devices performs better than either device individually. Certain devices are better for classification of particular activities.  
+    The $\mathrm{F}_1$ measures meet goal two. They do not show the smartwatch to be better at classifying activities on average than the smartphone. However, using data from both devices performs better than either device individually. Certain devices are better for classification of particular activities.
+  \clearpage
   \section{Summary}
-    In this section I compare $\mathrm{F}_1$ measures per activity and on average over all activities between phone-only features, watch-only features and both phone and watch features classification. I also present confusion matrices for each of these three feature sets.
+    In this section I compared $\mathrm{F}_1$ measures per activity and on average over all activities between phone-only features, watch-only features and both phone and watch features classification. I presented confusion matrices for each of these three feature sets. Finally, I analysed importances of features.
     
-    In terms of $\mathrm{F}_1$ measure, phone and watch classification outperforms either device individually. Individually neither device can be said to outperform the other on average, but certain devices are better for classification of particular activities. The range of $\mathrm{F}_1$ measures between the three sets of classification is not large, but this is primarily because there is not much scope to improve on using either device individually: they both individually score \textgreater0.9 on the $\mathrm{F}_1$ measure on average across all activities.
-    
-    I also use feature importance from decision trees to evaluate phone and watch features. This method calculates that watch features have an average total importance of 0.42 compared to the phone's 0.58. Some activities a total importance as high as 0.6 to watch features, while others are as low as 0.2.
+    The key results of this project are:
+    \begin{enumerate}
+      \item The best $\mathrm{F}_1$ measure was $0.96 \pm 0.01$, measured with a random forest classifier trained on phone and smartwatch data.
+      \item The smartwatch performed slightly better than the smartphone, but the difference is not significant.
+      \item Some activities such as climbing, fussball and gallery perusal were classified more accurately with the smartwatch than the smartphone. The smartphone performed better at computer use, eating and gym cycling.
+      \item Unexpected results were that computer use and eating were both classified better using  phone-only features, while cycling was classified better using watch-only features. One theory for this observation is that the accelerometer we think of as being best suited to the task is only sufficient to place the activity in a general class. The phone isn't enough to distinguish between cycling and gym cycling, for example. For that distinction, the smartwatch may be better suited.
+      \item Analysis of feature importances indicates that, to a random forest classifier, the phone features were found to be more important on average than watch features.
+      \item The feature importance analysis reflects the findings from the $\mathrm{F}_1$ measures: the watch features are most important in cycling, gallery perusal and climbing, while the phone features are most important in computer use and standing.
+    \end{enumerate}
